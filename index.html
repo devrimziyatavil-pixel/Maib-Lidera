@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maib LIDERA — Women's Digital Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'DM Sans', sans-serif; overflow: hidden; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(108,194,74,0.25); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(108,194,74,0.4); }
+    input:focus { outline: none; border-color: #6CC24A !important; }
+    button:active { transform: scale(0.98); }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+const C = {
+  maibGreen:"#6CC24A",dark:"#1A1A2E",deep:"#0F0F1F",white:"#FFFFFF",
+  offWhite:"#F8FAF7",grayLight:"#F0F2EE",grayMid:"#94A3B8",grayText:"#64748B",
+  text:"#1E293B",gold:"#FFB800",coral:"#FF6B6B",sky:"#4ECDC4",purple:"#A06CD5",
+  lightGreen:"#E8F5E3",pink:"#E84393",teal:"#0D9488",
+};
+
+const I={
+  finance:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>,
+  book:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>,
+  cart:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>,
+  users:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>,
+  arrow:<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>,
+  check:<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>,
+  star:<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+  search:<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
+  bell:<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>,
+  pin:<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>,
+  heart:<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" opacity="0.9"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>,
+  trendUp:<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>,
+  alertCircle:<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>,
+  file:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>,
+  layers:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>,
+  video:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>,
+  play:<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>,
+  shield:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+  phone:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>,
+  pos:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M8 21V7M16 21V7M2 12h20"/></svg>,
+  globe:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>,
+  award:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>,
+  chart:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>,
+  leaf:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.17 22l1-2A17 17 0 0021 2c0 0-2.18 4.58-4 6z"/></svg>,
+  truck:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>,
+  building:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="4" y="2" width="16" height="20"/><line x1="9" y1="6" x2="9.01" y2="6"/><line x1="15" y1="6" x2="15.01" y2="6"/><path d="M9 22V18h6v4"/></svg>,
+  credit:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>,
+  mail:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></svg>,
+  briefcase:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>,
+  heartPulse:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M20.42 4.58a5.4 5.4 0 00-7.65 0l-.77.78-.77-.78a5.4 5.4 0 00-7.65 7.65l.78.77L12 20.65l7.65-7.65.77-.77a5.4 5.4 0 000-7.65z"/><path d="M3.5 12h4l2-3 3 6 2-3h5.5"/></svg>,
+  zap:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
+  coffee:<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>,
+};
+
+const CAMPAIGN_URL="https://www.maib.md/en/persoane-juridice/noutati/maib-consolideaza-initiativa-de-sustinere-a-antreprenoriatului-feminin-prin-campania-femei-care-conduc";
+
+const Logo=({s=28})=>(<div style={{display:"flex",alignItems:"baseline",gap:s>24?8:5}}><span style={{fontFamily:"'DM Sans',sans-serif",fontWeight:800,fontSize:s,color:C.maibGreen,letterSpacing:-1}}>Maib</span><span style={{fontFamily:"'DM Sans',sans-serif",fontWeight:700,fontSize:s*0.85,color:C.white,letterSpacing:3,textTransform:"uppercase"}}>LIDERA</span></div>);
+const Pill=({children,active,color,onClick})=>(<button onClick={onClick} style={{padding:"9px 18px",borderRadius:50,border:active?"none":`1px solid ${C.white}15`,background:active?(color||C.maibGreen):"transparent",color:active?C.white:C.grayMid,fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:active?700:500,cursor:"pointer",transition:"all 0.2s",whiteSpace:"nowrap"}}>{children}</button>);
+const Btn=({children,bg,color,onClick,full})=>(<button onClick={onClick} style={{padding:"14px 28px",background:bg||C.maibGreen,color:color||C.dark,border:"none",borderRadius:50,fontFamily:"'DM Sans',sans-serif",fontSize:14,fontWeight:700,cursor:"pointer",transition:"all 0.2s",width:full?"100%":"auto",display:"flex",alignItems:"center",justifyContent:"center",gap:8}} onMouseEnter={e=>e.target.style.opacity="0.88"} onMouseLeave={e=>e.target.style.opacity="1"}>{children}</button>);
+const SectionLabel=({color,text})=>(<div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}><div style={{width:32,height:2,background:color}}/><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600,letterSpacing:3,textTransform:"uppercase",color}}>{text}</span></div>);
+const LiveTag=()=>(<span style={{display:"inline-flex",alignItems:"center",gap:3,padding:"2px 7px",borderRadius:50,background:"#6CC24A18",fontFamily:"'DM Sans',sans-serif",fontSize:8,fontWeight:700,color:C.maibGreen,whiteSpace:"nowrap"}}>● Live</span>);
+const CoTag=()=>(<span style={{display:"inline-flex",alignItems:"center",gap:3,padding:"2px 7px",borderRadius:50,background:"#FFB80018",fontFamily:"'DM Sans',sans-serif",fontSize:8,fontWeight:700,color:C.gold,whiteSpace:"nowrap"}}>★ Co-created</span>);
+const Tags=({live,co})=>(<span style={{display:"inline-flex",gap:4,marginLeft:6}}>{live&&<LiveTag/>}{co&&<CoTag/>}</span>);
+
+// ═══════════════════════════════════════════
+// HERO
+// ═══════════════════════════════════════════
+function Hero({nav}){
+  const[a,setA]=useState(false);
+  useEffect(()=>{setTimeout(()=>setA(true),100);},[]);
+  const tr=(d,extra="")=>`all 0.8s ease ${d}s ${extra}`;
+  const vis=d=>({opacity:a?1:0,transform:a?"translateY(0)":"translateY(20px)",transition:tr(d)});
+  return(
+  <section style={{background:`linear-gradient(135deg,${C.deep} 0%,${C.dark} 50%,#0d2818 100%)`,minHeight:"100vh",display:"flex",alignItems:"center",position:"relative",overflow:"hidden"}}>
+    <div style={{position:"absolute",top:-120,right:-120,width:400,height:400,borderRadius:"50%",background:`radial-gradient(circle,${C.maibGreen}12,transparent 70%)`}}/>
+    <div style={{position:"absolute",bottom:-80,left:-80,width:300,height:300,borderRadius:"50%",background:`radial-gradient(circle,${C.sky}08,transparent 70%)`}}/>
+    <div style={{position:"absolute",inset:0,backgroundImage:`linear-gradient(${C.maibGreen}06 1px,transparent 1px),linear-gradient(90deg,${C.maibGreen}06 1px,transparent 1px)`,backgroundSize:"60px 60px"}}/>
+    <div style={{maxWidth:1200,margin:"0 auto",padding:"120px 24px 80px",position:"relative",zIndex:2,width:"100%"}}>
+      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:24,...vis(0)}}>
+        <div style={{width:40,height:2,background:C.maibGreen}}/><span style={{color:C.maibGreen,fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600,letterSpacing:3,textTransform:"uppercase"}}>Where women entrepreneurs grow</span>
+      </div>
+      <h1 style={{fontFamily:"'DM Sans',sans-serif",fontSize:"clamp(34px,5vw,64px)",fontWeight:800,color:C.white,lineHeight:1.08,maxWidth:820,margin:"0 0 20px",...vis(0.15)}}>
+        The capital to <span style={{color:C.maibGreen}}>start</span>,<br/>the knowledge to <span style={{color:C.gold}}>grow</span>,<br/>the connections to <span style={{color:C.sky}}>scale</span>.
+      </h1>
+      <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:17,color:C.grayMid,maxWidth:540,lineHeight:1.7,margin:"0 0 40px",...vis(0.3)}}>
+        Moldova's first integrated platform for women-led businesses — combining tailored financing, business education, and market access under one digital roof. Powered by Maib.
+      </p>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16,maxWidth:700,...vis(0.45)}}>
+        {[{k:"finance",icon:"💳",label:"Explore Products",sub:"Loans, savings, cards tailored for you",c:C.maibGreen},{k:"academy",icon:"🚀",label:"Enter the Growth Hub",sub:"Experiment, learn, build & grow",c:C.gold},{k:"network",icon:"🏪",label:"Discover Network",sub:"Connect, trade & grow together",c:C.sky}].map((cta,i)=>(
+          <div key={i} onClick={()=>nav(cta.k)} style={{background:`${cta.c}15`,borderRadius:16,padding:"20px 18px",cursor:"pointer",border:`1px solid ${cta.c}25`,transition:"all 0.3s",backdropFilter:"blur(8px)"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-4px)";e.currentTarget.style.boxShadow=`0 12px 30px ${cta.c}20`;}} onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none";}}>
+            <div style={{fontSize:28,marginBottom:10}}>{cta.icon}</div>
+            <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,fontWeight:700,color:C.white,marginBottom:4}}>{cta.label}</div>
+            <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:`${C.white}60`,lineHeight:1.5}}>{cta.sub}</div>
+            <div style={{marginTop:10,color:cta.c}}>{I.arrow}</div>
+          </div>
+        ))}
+      </div>
+      {/* Femei care conduc banner */}
+      <a href={CAMPAIGN_URL} target="_blank" rel="noopener noreferrer" style={{textDecoration:"none",display:"block",marginTop:56,borderRadius:20,overflow:"hidden",background:`linear-gradient(135deg, #6B1D50 0%, #A83279 40%, #D63384 70%, #E84393 100%)`,...vis(0.6),cursor:"pointer",position:"relative"}}>
+        <div style={{position:"absolute",top:-60,right:-40,width:220,height:220,borderRadius:"50%",background:"rgba(255,255,255,0.06)"}}/>
+        <div style={{position:"absolute",right:30,top:16,fontSize:56,opacity:0.1,transform:"rotate(12deg)"}}>✿</div>
+        <div style={{padding:"32px 40px",display:"grid",gridTemplateColumns:"1fr auto",gap:32,alignItems:"center",position:"relative",zIndex:2}}>
+          <div>
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}><span style={{color:"#FFD4E0"}}>{I.heart}</span><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:700,letterSpacing:2.5,textTransform:"uppercase",color:"#FFD4E0"}}>Maib Campaign · „Femei care conduc"</span></div>
+            <h3 style={{fontFamily:"'DM Sans',sans-serif",fontSize:26,fontWeight:800,color:C.white,margin:"0 0 8px",lineHeight:1.2}}>Women who lead businesses.<br/>Maib leads with them.</h3>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:"rgba(255,255,255,0.75)",lineHeight:1.7,margin:"0 0 16px",maxWidth:440}}>Business financing in MDL with a fixed rate of 8.88%/year. Plus a free Visa/Mastercard Business debit card for the first year.</p>
+            <div style={{display:"flex",gap:24,marginBottom:16}}>
+              {[{v:"8.88%",l:"Fixed annual rate"},{v:"Free",l:"Business card, 1st year"},{v:"Mar 31",l:"Apply by deadline"}].map((d,i)=>(<div key={i}><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:24,fontWeight:800,color:C.white}}>{d.v}</div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:"rgba(255,255,255,0.55)"}}>{d.l}</div></div>))}
+            </div>
+            <div style={{display:"inline-flex",padding:"12px 24px",background:C.white,color:"#A83279",borderRadius:50,fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,gap:6,alignItems:"center"}}>Learn More & Apply {I.arrow}</div>
+          </div>
+          <div style={{width:140,height:140,borderRadius:"50%",background:"rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",border:"1px solid rgba(255,255,255,0.12)"}}><div><div style={{fontSize:40,marginBottom:2}}>👩‍💼</div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,fontWeight:600,color:"rgba(255,255,255,0.7)"}}>Tu conduci.</div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:800,color:C.white}}>Maib LIDERA.</div></div></div>
+        </div>
+      </a>
+    </div>
+  </section>);
+}
+
+// ═══════════════════════════════════════════
+// PILLARS
+// ═══════════════════════════════════════════
+function Pillars({nav}){
+  const pillars=[
+    {k:"finance",icon:I.finance,c:C.maibGreen,t:"Access to Finance",d:"Start Package, startup loans, overnight facility, partnership loans — with ODA guarantee fast-track and cash-flow credit assessment.",feats:["LIDERA Start Package","Startup Loan for Women","Overnight Facility","Partnership Loans","Smart Eligibility Checker","Financial Command Center"]},
+    {k:"academy",icon:I.book,c:C.gold,t:"Access to Knowledge",d:"Where ideas meet execution — courses, consultancy, mentoring, hackathons, and hands-on experiments to accelerate your business.",feats:["LIDERA Growth Hub Programs & Freelancer Track","Consultancy Package","Mentoring Marketplace","Financial Literacy Hub","Expert Webinars","LIDERA Hackathon"]},
+    {k:"network",icon:I.cart,c:C.sky,t:"LIDERA Network",d:"Connect with peers, find mentors, trade with women-owned businesses — community and marketplace under one roof.",feats:["Connect: Forums, Summit, Hackathon, Peer Circles","Trade: Business Directory & Virtual Trade Fair","Supply Chain Finance & Export Toolkit","Success Stories & Business Lunch Series"]},
+  ];
+  return(
+  <section style={{background:C.offWhite,padding:"96px 24px"}}>
+    <div style={{maxWidth:1200,margin:"0 auto"}}>
+      <div style={{textAlign:"center",marginBottom:56}}>
+        <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600,letterSpacing:3,textTransform:"uppercase",color:C.maibGreen}}>Three Pillars</span>
+        <h2 style={{fontFamily:"'DM Sans',sans-serif",fontSize:"clamp(26px,4vw,42px)",fontWeight:800,color:C.text,margin:"10px 0 0"}}>One Ecosystem, Complete Support</h2>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:20}}>
+        {pillars.map((p,i)=>(
+          <div key={i} onClick={()=>nav(p.k)} style={{background:C.white,borderRadius:20,padding:32,cursor:"pointer",border:"1px solid #e8ebe5",position:"relative",overflow:"hidden",transition:"all 0.3s"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-5px)";e.currentTarget.style.boxShadow=`0 16px 40px ${p.c}12`;}} onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none";}}>
+            <div style={{position:"absolute",top:-30,right:-30,width:120,height:120,borderRadius:"50%",background:`${p.c}08`}}/>
+            <div style={{width:52,height:52,borderRadius:14,background:`${p.c}10`,display:"flex",alignItems:"center",justifyContent:"center",color:p.c,marginBottom:18}}>{p.icon}</div>
+            <h3 style={{fontFamily:"'DM Sans',sans-serif",fontSize:20,fontWeight:700,color:C.text,margin:"0 0 10px"}}>{p.t}</h3>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:C.grayText,lineHeight:1.7,margin:"0 0 20px"}}>{p.d}</p>
+            {p.feats.map((f,j)=>(<div key={j} style={{display:"flex",alignItems:"center",gap:8,fontFamily:"'DM Sans',sans-serif",fontSize:12,color:C.text,marginBottom:5}}><span style={{color:p.c}}>{I.check}</span>{f}</div>))}
+            <div style={{marginTop:16,display:"flex",alignItems:"center",gap:6,fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600,color:p.c}}>Explore {I.arrow}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>);
+}
+
+// ═══════════════════════════════════════════
+// ★ NEW: SOCIAL PACKAGE + NEWSLETTER (Home page section)
+// ═══════════════════════════════════════════
+function BeyondBanking(){
+  return(
+  <section style={{background:C.white,padding:"96px 24px"}}>
+    <div style={{maxWidth:1200,margin:"0 auto"}}>
+      <div style={{textAlign:"center",marginBottom:56}}>
+        <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600,letterSpacing:3,textTransform:"uppercase",color:C.purple}}>Beyond Banking</span>
+        <h2 style={{fontFamily:"'DM Sans',sans-serif",fontSize:"clamp(26px,4vw,42px)",fontWeight:800,color:C.text,margin:"10px 0 8px"}}>LIDERA Social Package</h2>
+        <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,color:C.grayText,maxWidth:600,margin:"0 auto",lineHeight:1.7}}>Because supporting women entrepreneurs means supporting their whole world — health, family, and community.</p>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:16,marginBottom:48}}>
+        {[
+          {icon:I.heartPulse,e:"🏥",t:"Women's Health",d:"Dedicated health insurance packages for women entrepreneurs — preventive care, maternity, and wellness",c:C.coral,live:false,co:true},
+          {icon:I.shield,e:"👶",t:"Children's Insurance",d:"Affordable coverage for your children's health and education milestones",c:C.sky,live:false,co:true},
+          {icon:I.book,e:"👨‍👩‍👧",t:"Family e-Learning",d:"Access to digital learning platform for your family — languages, digital skills, financial literacy",c:C.gold,live:false,co:true},
+          {icon:I.briefcase,e:"💼",t:"Staff Health Insurance",d:"Group health insurance packages for your employees at preferential Maib partner rates",c:C.maibGreen,live:true,co:true},
+          {icon:I.heart,e:"🏋️‍♀️",t:"Wellness & Lifestyle",d:"Via card red: 10% co-working (Tekwill), 50% Taxi Letz, 100 MDL Netflix discount, 15% iHerb, 10% online courses",c:C.purple,live:true,co:false},
+        ].map((s,i)=>(
+          <div key={i} style={{background:C.grayLight,borderRadius:16,padding:24,transition:"all 0.25s",cursor:"pointer",position:"relative",overflow:"hidden"}} onMouseEnter={e=>e.currentTarget.style.transform="translateY(-3px)"} onMouseLeave={e=>e.currentTarget.style.transform="translateY(0)"}>
+            <div style={{position:"absolute",top:-20,right:-20,width:80,height:80,borderRadius:"50%",background:`${s.c}06`}}/>
+            <div style={{fontSize:28,marginBottom:10}}>{s.e}</div>
+            <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,fontWeight:700,color:C.text,marginBottom:4}}>{s.t}</div>
+            <div style={{marginBottom:6}}><Tags live={s.live} co={s.co}/></div>
+            <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:C.grayText,lineHeight:1.6}}>{s.d}</div>
+          </div>
+        ))}
+      </div>
+      {/* Newsletter */}
+      <div style={{background:`linear-gradient(135deg,${C.deep},#0d2818)`,borderRadius:20,padding:"36px 44px",display:"grid",gridTemplateColumns:"1fr auto",gap:32,alignItems:"center"}}>
+        <div>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}><span style={{color:C.maibGreen}}>{I.mail}</span><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:C.maibGreen}}>LIDERA Monthly Newsletter</span></div>
+          <h3 style={{fontFamily:"'DM Sans',sans-serif",fontSize:22,fontWeight:800,color:C.white,margin:"0 0 8px"}}>Stay connected. Stay informed.</h3>
+          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:C.grayMid,lineHeight:1.7,margin:0}}>Monthly digest from Maib divisions: new products, upcoming workshops & trainings, partnership opportunities, grant programs, regulatory updates, and success stories from the LIDERA community.</p>
+        </div>
+        <div style={{display:"flex",gap:8}}>
+          <input placeholder="your@email.com" style={{padding:"12px 16px",borderRadius:12,border:`1px solid ${C.white}15`,background:`${C.white}06`,color:C.white,fontFamily:"'DM Sans',sans-serif",fontSize:13,width:220,boxSizing:"border-box"}}/>
+          <button style={{padding:"12px 24px",background:C.maibGreen,color:C.dark,border:"none",borderRadius:12,fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,cursor:"pointer",whiteSpace:"nowrap"}}>Subscribe</button>
+        </div>
+      </div>
+    </div>
+  </section>);
+}
+
+// ═══════════════════════════════════════════
+// FINANCE PAGE — Workshop products integrated
+// ═══════════════════════════════════════════
+function FinancePage(){
+  const[ap,setAp]=useState(0);
+  const[diagStep,setDiagStep]=useState(0);
+  const products=[
+    {name:"LIDERA Start Package",rate:"100 MDL/mo",amount:"All-in-one",term:"From day 1",badge:"Based on maib Start",c:C.maibGreen,live:true,co:true,feats:["1 Business Account (MDL/EUR/USD) + Business Debit Card (Visa/Mastercard)","1 Smart POS terminal + QR MIA + e-Commerce activation","20 free intra-bank + 5 free inter-bank payments/month","Free for first 6 months for companies less than 12 months old","maib business online banking + maibank app + LIDERA platform access"]},
+    {name:"Startup Loan for Women",rate:"8.88% fixed",amount:"Up to 90% of project",term:"Up to 60 mo",badge:"Femei care conduc",c:C.gold,live:true,co:true,feats:["Fixed 8.88% annual rate in MDL — Femei care conduc campaign","80% ODA government guarantee fast-track for collateral relief","Grace periods up to 6 months on working capital portion","Free Visa/Mastercard Business Debit Card — 1st year administration free","Apply before March 31, 2026 — campaign deadline"]},
+    {name:"Micro-Entrepreneur Package",rate:"from 10.9%",amount:"Up to 3M MDL",term:"Up to 24 mo",badge:"No Collateral",c:C.coral,live:true,co:false,feats:["Up to 3,000,000 MDL without collateral","Cash-flow based credit assessment — no property required","Fast processing via maibank mobile app","Tailored for retail, services, and small production businesses","Linked to maib Business Start or Forte package"]},
+    {name:"Overnight Facility",rate:"Competitive",amount:"Flexible",term:"Daily",badge:"Exclusive",c:C.purple,live:false,co:true,feats:["Short-term liquidity exclusively for women entrepreneurs","Automatic overnight sweep from your maib business account","No fixed term — use only when you need it","Ideal for managing seasonal cash flow gaps","Available only through LIDERA platform"]},
+    {name:"Revolving Credit Line",rate:"Flexible",amount:"10% of turnover",term:"Revolving",badge:"She Grows",c:C.sky,live:false,co:true,feats:["Credit card/revolving based on 10% of annual turnover","Unsecured with ODA guarantee coverage","Draw and repay flexibly as needed — revolving facility","Personalized cashback on education, fuel & office spending","Linked to your maib business account + salary project free"]},
+    {name:"Partnership Loans",rate:"from 0%",amount:"Varies",term:"Up to 12 mo",badge:"0% Interest",c:C.teal,live:true,co:true,feats:["Financing through Maib's corporate partner network","0% interest options for 6–12 months on technology & equipment","Apply online from partner showroom or remotely","No branch visit required — digital approval via maib business","Partners include equipment vendors, tech providers, suppliers"]},
+    {name:"LIDERA Cashback Rewards",rate:"Up to 5%",amount:"On every purchase",term:"Monthly",badge:"New",c:C.pink,live:false,co:true,feats:["Personalized cashback: education, fuel, office supplies, co-working","Higher rates for purchases from LIDERA Directory businesses","Free unlimited PayPal top-ups (via card red infrastructure)","Discounts: 10% co-working (Tekwill), 10% online courses, Netflix","Track all earnings in Financial Command Center dashboard"]},
+  ];
+  const p=products[ap];
+  useEffect(()=>{if(diagStep===1){const t=setTimeout(()=>setDiagStep(2),2200);return()=>clearTimeout(t);}},[diagStep]);
+
+  return(
+  <section style={{background:C.white,padding:"96px 24px"}}>
+    <div style={{maxWidth:1200,margin:"0 auto"}}>
+      <SectionLabel color={C.maibGreen} text="Pillar 1 · Access to Finance"/>
+      <h2 style={{fontFamily:"'DM Sans',sans-serif",fontSize:"clamp(26px,4vw,40px)",fontWeight:800,color:C.text,margin:"0 0 8px"}}>Tailored Financial Products</h2>
+      <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:C.grayText,margin:"0 0 32px",maxWidth:600}}>From your first business account to revolving credit and partnership loans — a complete financial toolkit designed with women entrepreneurs.</p>
+
+      <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:28}}>
+        {products.map((pr,i)=>(<Pill key={i} active={ap===i} color={pr.c} onClick={()=>setAp(i)}>{pr.name}</Pill>))}
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:36,alignItems:"start",marginBottom:56}}>
+        <div style={{background:C.grayLight,borderRadius:20,padding:36,position:"relative",overflow:"hidden"}}>
+          <div style={{position:"absolute",top:14,right:14,padding:"5px 12px",borderRadius:50,background:p.c,fontFamily:"'DM Sans',sans-serif",fontSize:10,fontWeight:700,color:C.white}}>{p.badge}</div>
+          <h3 style={{fontFamily:"'DM Sans',sans-serif",fontSize:24,fontWeight:800,color:C.text,margin:"0 0 6px"}}>{p.name}</h3>
+          <div style={{marginBottom:22}}><Tags live={p.live} co={p.co}/></div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14,marginBottom:28}}>
+            {[{l:"Rate",v:p.rate},{l:"Amount",v:p.amount},{l:"Term",v:p.term}].map((x,j)=>(<div key={j}><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:C.grayText,textTransform:"uppercase",letterSpacing:1,marginBottom:3}}>{x.l}</div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,fontWeight:700,color:C.text}}>{x.v}</div></div>))}
+          </div>
+          <Btn bg={p.c} color={C.white} full>Apply Now</Btn>
+        </div>
+        <div>
+          <h4 style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600,color:C.grayMid,textTransform:"uppercase",letterSpacing:1,margin:"0 0 16px"}}>Key Features</h4>
+          {p.feats.map((f,j)=>(<div key={j} style={{display:"flex",alignItems:"flex-start",gap:10,padding:"11px 14px",background:C.grayLight,borderRadius:10,marginBottom:7}}><span style={{color:p.c,marginTop:1,flexShrink:0}}>{I.check}</span><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:C.text,lineHeight:1.5}}>{f}</span></div>))}
+        </div>
+      </div>
+
+      {/* Eligibility Checker */}
+      <div style={{background:`linear-gradient(135deg,${C.deep},#0d2818)`,borderRadius:20,padding:44,color:C.white,position:"relative",overflow:"hidden",marginBottom:56}}>
+        <div style={{position:"absolute",top:-50,right:-50,width:200,height:200,borderRadius:"50%",background:`${C.maibGreen}08`}}/>
+        <h3 style={{fontFamily:"'DM Sans',sans-serif",fontSize:24,fontWeight:800,margin:"0 0 24px"}}>Smart Eligibility Checker</h3>
+        {diagStep===0&&(<div style={{display:"grid",gridTemplateColumns:"1.2fr 1fr",gap:36}}>
+          <div>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:C.grayMid,lineHeight:1.7,margin:"0 0 20px"}}>Multi-dimensional assessment: transaction analysis, psychometric scoring, sector benchmarks, and ODA guarantee matching.</p>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+              {[{icon:"🏦",t:"Bank Transactions",d:"6-month cash flow from Maib accounts"},{icon:"🧠",t:"Psychometric Score",d:"Behavioral assessment for thin-file"},{icon:"📊",t:"Business Health",d:"Revenue stability & sector risk"},{icon:"🛡️",t:"ODA Guarantee Match",d:"Auto-check 80% guarantee eligibility"}].map((f,i)=>(<div key={i} style={{background:`${C.white}06`,borderRadius:12,padding:14}}><div style={{fontSize:20,marginBottom:6}}>{f.icon}</div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600,color:C.white,marginBottom:2}}>{f.t}</div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:C.grayMid}}>{f.d}</div></div>))}
+            </div>
+          </div>
+          <div style={{background:`${C.white}06`,borderRadius:16,padding:24}}>
+            <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:600,color:C.white,marginBottom:16}}>Quick Assessment</div>
+            {[{l:"Sector",v:"Beauty & Wellness"},{l:"Years operating",v:"3 years"},{l:"Monthly revenue",v:"MDL 85,000"},{l:"Employees",v:"4"},{l:"Amount needed",v:"MDL 250,000"},{l:"Purpose",v:"Equipment & expansion"}].map((f,i)=>(<div key={i} style={{display:"flex",justifyContent:"space-between",padding:"8px 0",borderBottom:i<5?`1px solid ${C.white}08`:"none"}}><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.grayMid}}>{f.l}</span><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600,color:C.white}}>{f.v}</span></div>))}
+            <button onClick={()=>setDiagStep(1)} style={{width:"100%",marginTop:16,padding:"13px",background:C.maibGreen,color:C.dark,border:"none",borderRadius:12,fontFamily:"'DM Sans',sans-serif",fontSize:14,fontWeight:700,cursor:"pointer"}}>Run Diagnosis</button>
+          </div>
+        </div>)}
+        {diagStep===1&&(<div style={{textAlign:"center",padding:"60px 0"}}><div style={{width:80,height:80,borderRadius:"50%",border:`3px solid ${C.maibGreen}30`,borderTopColor:C.maibGreen,margin:"0 auto 20px",animation:"spin 1s linear infinite"}}/><style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,fontWeight:700,color:C.white,marginBottom:8}}>Analyzing your business profile...</div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:C.grayMid}}>Checking: transaction history, sector benchmarks, ODA eligibility, credit bureau</div></div>)}
+        {diagStep===2&&(<div>
+          <div style={{display:"flex",gap:12,marginBottom:24}}><button onClick={()=>setDiagStep(0)} style={{padding:"8px 18px",borderRadius:50,border:`1px solid ${C.white}20`,background:"transparent",color:C.grayMid,fontFamily:"'DM Sans',sans-serif",fontSize:12,cursor:"pointer"}}>← New Assessment</button><div style={{padding:"8px 18px",borderRadius:50,background:`${C.maibGreen}20`,fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600,color:C.maibGreen}}>✓ Diagnosis Complete</div></div>
+          <div style={{display:"grid",gridTemplateColumns:"200px 1fr 1fr",gap:16}}>
+            <div style={{background:`${C.white}06`,borderRadius:16,padding:24,textAlign:"center"}}><div style={{width:100,height:100,borderRadius:"50%",background:`conic-gradient(${C.maibGreen} 0% 82%, ${C.white}10 82% 100%)`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 12px"}}><div style={{width:78,height:78,borderRadius:"50%",background:C.deep,display:"flex",alignItems:"center",justifyContent:"center"}}><div><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:28,fontWeight:800,color:C.maibGreen}}>82</span><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:C.grayMid}}>/100</span></div></div></div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,color:C.white}}>Eligibility Score</div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.maibGreen,fontWeight:600}}>STRONG CANDIDATE</div></div>
+            <div style={{background:`${C.maibGreen}12`,borderRadius:16,padding:24,border:`1px solid ${C.maibGreen}30`}}>
+              <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,fontWeight:600,letterSpacing:1.5,textTransform:"uppercase",color:C.maibGreen,marginBottom:8}}>Recommended Product</div>
+              <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,fontWeight:800,color:C.white,marginBottom:8}}>Startup Loan for Women</div>
+              {[{l:"Pre-approved",v:"MDL 280,000"},{l:"Rate",v:"8.7% fixed"},{l:"Term",v:"48 months"},{l:"Payment",v:"~MDL 6,900/mo"}].map((r,i)=>(<div key={i} style={{display:"flex",justifyContent:"space-between",padding:"3px 0",fontFamily:"'DM Sans',sans-serif",fontSize:12}}><span style={{color:`${C.white}70`}}>{r.l}</span><span style={{color:C.white,fontWeight:600}}>{r.v}</span></div>))}
+              <button style={{marginTop:12,padding:"10px 20px",background:C.maibGreen,color:C.dark,border:"none",borderRadius:50,fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:700,cursor:"pointer",width:"100%"}}>Start Application →</button>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:10}}>
+              <div style={{background:`${C.white}06`,borderRadius:14,padding:14,flex:1}}><div style={{display:"flex",alignItems:"center",gap:6,marginBottom:6}}><div style={{width:22,height:22,borderRadius:"50%",background:`${C.maibGreen}20`,display:"flex",alignItems:"center",justifyContent:"center",color:C.maibGreen}}>{I.check}</div><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:700,color:C.white}}>ODA Guarantee: Eligible</span></div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:`${C.white}60`}}>80% coverage → collateral reduced to MDL 56,000</div></div>
+              <div style={{background:`${C.white}06`,borderRadius:14,padding:14,flex:1}}><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:600,color:C.gold,marginBottom:6}}>Score Breakdown</div>{[{l:"Cash flow",v:90,c:C.maibGreen},{l:"Sector risk",v:75,c:C.gold},{l:"Maturity",v:85,c:C.sky},{l:"Footprint",v:78,c:C.purple}].map((s,i)=>(<div key={i} style={{marginBottom:5}}><div style={{display:"flex",justifyContent:"space-between",fontFamily:"'DM Sans',sans-serif",fontSize:10,color:`${C.white}70`}}><span>{s.l}</span><span style={{fontWeight:600,color:C.white}}>{s.v}</span></div><div style={{height:4,background:`${C.white}10`,borderRadius:2,marginTop:2}}><div style={{height:"100%",width:`${s.v}%`,background:s.c,borderRadius:2}}/></div></div>))}</div>
+              <div style={{background:`${C.sky}12`,borderRadius:14,padding:14,border:`1px solid ${C.sky}25`}}><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:600,color:C.sky,marginBottom:4}}>Also Eligible For</div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:`${C.white}70`}}>Revolving Credit (MDL 85K) · Overnight Facility · Partnership Loans (0%)</div></div>
+            </div>
+          </div>
+        </div>)}
+      </div>
+
+      {/* Financial Command Center */}
+      <h3 style={{fontFamily:"'DM Sans',sans-serif",fontSize:22,fontWeight:800,color:C.text,margin:"0 0 8px"}}>Financial Command Center</h3>
+      <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:C.grayText,margin:"0 0 24px"}}>Real-time intelligence: Maib accounts, e-invoicing, multi-bank aggregation — one dashboard.</p>
+      <div style={{background:C.grayLight,borderRadius:20,padding:28,border:"1px solid #e8ebe5"}}>
+        <div style={{display:"flex",gap:4,marginBottom:20}}>{["Overview","Cash Flow","e-Invoices","Accounts","Credit Score"].map((t,i)=>(<button key={i} style={{padding:"7px 16px",borderRadius:8,border:"none",background:i===0?C.maibGreen:"transparent",color:i===0?C.white:C.grayText,fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:i===0?700:500,cursor:"pointer"}}>{t}</button>))}</div>
+        <div style={{display:"grid",gridTemplateColumns:"2fr 1fr",gap:16}}>
+          <div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:16}}>
+              {[{l:"Total Balance",v:"MDL 128,700",ch:"+12%",c:C.maibGreen,icon:"🏦"},{l:"Receivables",v:"MDL 45,200",ch:"6 invoices",c:C.gold,icon:"📄"},{l:"Payables",v:"MDL 18,400",ch:"3 due",c:C.coral,icon:"📤"}].map((m,i)=>(<div key={i} style={{background:C.white,borderRadius:12,padding:14}}><div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}><span style={{fontSize:16}}>{m.icon}</span><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:m.c,fontWeight:600}}>{m.ch}</span></div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:C.grayText}}>{m.l}</div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,fontWeight:800,color:C.text}}>{m.v}</div></div>))}
+            </div>
+            <div style={{background:C.white,borderRadius:14,padding:18}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:14}}><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600,color:C.text}}>Cash Flow — 6 Months</span><div style={{display:"flex",gap:10}}>{[{l:"Income",c:C.maibGreen},{l:"Expenses",c:`${C.coral}70`},{l:"Invoiced",c:`${C.gold}80`}].map((x,i)=>(<div key={i} style={{display:"flex",alignItems:"center",gap:3}}><div style={{width:6,height:6,borderRadius:1,background:x.c}}/><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:9,color:C.grayText}}>{x.l}</span></div>))}</div></div>
+              <div style={{display:"flex",alignItems:"flex-end",gap:6,height:100}}>{[{m:"Oct",a:65,b:48,c:58},{m:"Nov",a:72,b:55,c:68},{m:"Dec",a:90,b:62,c:85},{m:"Jan",a:58,b:52,c:50},{m:"Feb",a:78,b:50,c:72},{m:"Mar",a:85,b:54,c:80}].map((d,i)=>(<div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:2}}><div style={{width:"100%",display:"flex",gap:1,alignItems:"flex-end",height:90}}><div style={{flex:1,height:`${d.a}%`,background:C.maibGreen,borderRadius:"3px 3px 0 0"}}/><div style={{flex:1,height:`${d.b}%`,background:`${C.coral}60`,borderRadius:"3px 3px 0 0"}}/><div style={{flex:1,height:`${d.c}%`,background:`${C.gold}70`,borderRadius:"3px 3px 0 0"}}/></div><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:9,color:C.grayText}}>{d.m}</span></div>))}</div>
+            </div>
+          </div>
+          <div style={{display:"flex",flexDirection:"column",gap:10}}>
+            <div style={{background:C.white,borderRadius:14,padding:16}}><div style={{display:"flex",alignItems:"center",gap:6,marginBottom:10}}><span style={{color:C.sky}}>{I.layers}</span><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:700,color:C.text}}>Linked Accounts</span></div>{[{b:"Maib Business",v:"MDL 94,200",c:C.maibGreen},{b:"Maib Savings",v:"MDL 34,500",c:C.gold}].map((a,i)=>(<div key={i} style={{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:i<1?`1px solid #e8ebe5`:"none"}}><div style={{display:"flex",alignItems:"center",gap:6}}><div style={{width:6,height:6,borderRadius:"50%",background:a.c}}/><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.text}}>{a.b}</span></div><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:600,color:C.text}}>{a.v}</span></div>))}<button style={{marginTop:8,width:"100%",padding:"7px",borderRadius:8,border:`1px dashed ${C.sky}40`,background:"transparent",fontFamily:"'DM Sans',sans-serif",fontSize:10,color:C.sky,fontWeight:600,cursor:"pointer"}}>+ Link Account</button></div>
+            <div style={{background:C.white,borderRadius:14,padding:16}}><div style={{display:"flex",alignItems:"center",gap:6,marginBottom:10}}><span style={{color:C.gold}}>{I.file}</span><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:700,color:C.text}}>e-Invoices</span></div>{[{cl:"Beauty Supply Co.",a:"MDL 12,400",s:"Paid",sc:C.maibGreen},{cl:"Rent",a:"MDL 8,000",s:"Due Mar 15",sc:C.gold},{cl:"Marketing",a:"MDL 3,200",s:"Overdue",sc:C.coral}].map((inv,i)=>(<div key={i} style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:i<2?`1px solid #e8ebe5`:"none"}}><div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.text}}>{inv.cl}</div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:C.grayText}}>{inv.a}</div></div><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:9,fontWeight:600,color:inv.sc,background:`${inv.sc}12`,padding:"2px 8px",borderRadius:50}}>{inv.s}</span></div>))}<button style={{marginTop:8,width:"100%",padding:"7px",borderRadius:8,border:`1px dashed ${C.gold}40`,background:"transparent",fontFamily:"'DM Sans',sans-serif",fontSize:10,color:C.gold,fontWeight:600,cursor:"pointer"}}>+ Create Invoice</button></div>
+            <div style={{background:`${C.gold}08`,borderRadius:14,padding:14,border:`1px solid ${C.gold}20`}}><div style={{display:"flex",alignItems:"center",gap:6,marginBottom:4}}><span style={{color:C.gold}}>{I.alertCircle}</span><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:600,color:C.text}}>Seasonal Alert</span></div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:C.grayText,lineHeight:1.5}}>Your sector dips in April. Build MDL 15K buffer in 3 weeks.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>);
+}
+
+// ═══════════════════════════════════════════
+// LAB — with Consultancy Package, Freelancer Track, Hackathon
+// ═══════════════════════════════════════════
+function AcademyPage(){
+  const[active,setActive]=useState(null);
+  const sections=[
+    {id:"courses",icon:"📚",t:"Programs & Courses",sub:"Structured business education — from planning to export",stat:"6 programs",stat2:"1,145 enrolled",c:C.maibGreen},
+    {id:"consult",icon:"🏢",t:"Consultancy Desk",sub:"Maib advisors + certified partners, packaged for women entrepreneurs",stat:"3 journeys",stat2:"6 services",c:C.gold},
+    {id:"freelancer",icon:"👩‍💻",t:"Freelancer Track",sub:"From solo to CEO — dashboard, tax tools, and business transition path",stat:"4 modules",stat2:"Card red integrated",c:C.sky},
+    {id:"skills",icon:"🎬",t:"Skill Bites",sub:"5-minute video tutorials — financial literacy & digital essentials",stat:"4 videos",stat2:"RO & RU",c:C.coral},
+    {id:"live",icon:"🎤",t:"Live Sessions",sub:"Real talk from Maib specialists, founders, and industry insiders",stat:"4 upcoming",stat2:"2 live now",c:C.purple},
+    {id:"mentors",icon:"🤝",t:"Mentor Match",sub:"AI-matched with women who've built what you're building",stat:"4 mentors",stat2:"By sector & stage",c:C.teal},
+  ];
+
+  const back=()=>setActive(null);
+  const BackBtn=()=>(<button onClick={back} style={{display:"flex",alignItems:"center",gap:6,padding:"8px 18px",borderRadius:50,border:"1px solid #e8ebe5",background:C.white,fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600,color:C.grayText,cursor:"pointer",marginBottom:24,transition:"all 0.2s"}} onMouseEnter={e=>e.currentTarget.style.borderColor=C.maibGreen} onMouseLeave={e=>e.currentTarget.style.borderColor="#e8ebe5"}>← Back to Growth Hub</button>);
+
+  return(
+  <section style={{background:C.offWhite,padding:"96px 24px"}}>
+    <div style={{maxWidth:1200,margin:"0 auto"}}>
+      <SectionLabel color={C.gold} text="Pillar 2 · LIDERA Growth Hub"/>
+      <h2 style={{fontFamily:"'DM Sans',sans-serif",fontSize:"clamp(26px,4vw,40px)",fontWeight:800,color:C.text,margin:"0 0 8px"}}>LIDERA Growth Hub</h2>
+      <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:C.grayText,margin:"0 0 32px",maxWidth:560}}>Your growth engine — structured programs, expert consultancy, mentoring, and hands-on tools to take your business to the next level.</p>
+
+      {/* ═══ OVERVIEW CARDS ═══ */}
+      {!active&&(
+        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16}}>
+          {sections.map((s,i)=>(
+            <div key={i} onClick={()=>setActive(s.id)} style={{background:C.white,borderRadius:20,padding:28,cursor:"pointer",border:"1px solid #e8ebe5",position:"relative",overflow:"hidden",transition:"all 0.3s"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-5px)";e.currentTarget.style.boxShadow=`0 16px 36px ${s.c}14`;}} onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none";}}>
+              <div style={{position:"absolute",top:-20,right:-20,width:80,height:80,borderRadius:"50%",background:`${s.c}06`}}/>
+              <div style={{fontSize:36,marginBottom:14}}>{s.icon}</div>
+              <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,fontWeight:800,color:C.text,marginBottom:4}}>{s.t}</div>
+              <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:C.grayText,lineHeight:1.6,marginBottom:16}}>{s.sub}</div>
+              <div style={{display:"flex",gap:10}}>
+                <span style={{padding:"4px 10px",borderRadius:50,background:`${s.c}10`,fontFamily:"'DM Sans',sans-serif",fontSize:10,fontWeight:600,color:s.c}}>{s.stat}</span>
+                <span style={{padding:"4px 10px",borderRadius:50,background:C.grayLight,fontFamily:"'DM Sans',sans-serif",fontSize:10,fontWeight:600,color:C.grayText}}>{s.stat2}</span>
+              </div>
+              <div style={{marginTop:16,display:"flex",alignItems:"center",gap:4,fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600,color:s.c}}>Explore {I.arrow}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ═══ COURSES DETAIL ═══ */}
+      {active==="courses"&&(<div>
+        <BackBtn/>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:16}}>
+          {[{title:"Business Planning Fundamentals",level:"Beginner",dur:"4 wks",enrolled:234,rating:4.8,c:C.maibGreen,icon:"📊"},{title:"Financial Management for SMEs",level:"Intermediate",dur:"6 wks",enrolled:189,rating:4.9,c:C.gold,icon:"💰"},{title:"Digital Marketing Masterclass",level:"Beginner",dur:"4 wks",enrolled:312,rating:4.7,c:C.coral,icon:"📱"},{title:"Export Readiness & EU Markets",level:"Advanced",dur:"8 wks",enrolled:98,rating:4.9,c:C.sky,icon:"🌍"},{title:"Leadership & Growth Strategy",level:"Advanced",dur:"6 wks",enrolled:145,rating:4.8,c:C.purple,icon:"🚀"},{title:"Agricultural Business Finance",level:"Intermediate",dur:"4 wks",enrolled:167,rating:4.7,c:C.maibGreen,icon:"🌾"}].map((c,i)=>(
+            <div key={i} style={{background:C.white,borderRadius:14,overflow:"hidden",border:"1px solid #e8ebe5",transition:"all 0.25s",cursor:"pointer"}} onMouseEnter={e=>e.currentTarget.style.transform="translateY(-3px)"} onMouseLeave={e=>e.currentTarget.style.transform="translateY(0)"}>
+              <div style={{height:4,background:c.c}}/>
+              <div style={{padding:"20px 24px"}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:10}}><span style={{fontSize:28}}>{c.icon}</span><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,fontWeight:600,color:c.c,background:`${c.c}10`,padding:"3px 10px",borderRadius:50}}>{c.level}</span></div>
+                <h4 style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,fontWeight:700,color:C.text,margin:"0 0 14px",lineHeight:1.3}}>{c.title}</h4>
+                <div style={{display:"flex",justifyContent:"space-between"}}><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.grayText}}>⏱ {c.dur} · 👩‍🎓 {c.enrolled}</span><div style={{display:"flex",alignItems:"center",gap:3,color:C.gold}}>{I.star}<span style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600}}>{c.rating}</span></div></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>)}
+
+      {/* ═══ CONSULTANCY DESK DETAIL ═══ */}
+      {active==="consult"&&(<div>
+        <BackBtn/>
+        <h3 style={{fontFamily:"'DM Sans',sans-serif",fontSize:22,fontWeight:800,color:C.text,margin:"0 0 4px"}}>Consultancy Desk</h3>
+        <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:C.grayText,margin:"0 0 4px",maxWidth:600}}>Maib's advisory services — enhanced and packaged exclusively for women entrepreneurs.</p>
+        <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:C.maibGreen,fontWeight:600,margin:"0 0 28px"}}>Powered by Maib specialists + certified partner network</p>
+        <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:C.gold,marginBottom:14}}>Choose Your Journey</div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14,marginBottom:36}}>
+          {[
+            {title:"Getting My First Loan",sub:"From zero to funded",steps:["Credit Readiness Session with Maib advisor","ODA guarantee eligibility check","Business plan prep with partner consultant","Warm handoff to credit team with ready file"],c:C.maibGreen,icon:"💰",duration:"2-4 weeks",who:"Maib credit team + consultant"},
+            {title:"Scaling My Business",sub:"From home-based to growth",steps:["Business growth assessment","Accounting setup with Maib partner","First employee hiring + salary project","Working capital & revolving credit strategy"],c:C.gold,icon:"🚀",duration:"1-3 months",who:"Maib advisors + HR & accounting partners"},
+            {title:"Going International",sub:"From local to EU markets",steps:["Export readiness diagnostic","EU compliance & certification","Trade finance setup (SWIFT, FX, guarantees)","Virtual trade fair buyer connections"],c:C.sky,icon:"🌍",duration:"3-6 months",who:"Maib trade team + export consultants"},
+          ].map((j,i)=>(
+            <div key={i} style={{background:C.white,borderRadius:18,overflow:"hidden",border:"1px solid #e8ebe5"}}>
+              <div style={{background:`linear-gradient(135deg,${j.c}18,${j.c}06)`,padding:"18px 20px",position:"relative"}}>
+                <div style={{position:"absolute",top:10,right:12,fontSize:24,opacity:0.3}}>{j.icon}</div>
+                <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,fontWeight:800,color:C.text}}>{j.title}</div>
+                <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.grayText}}>{j.sub}</div>
+              </div>
+              <div style={{padding:"16px 20px"}}>
+                {j.steps.map((s,k)=>(<div key={k} style={{display:"flex",alignItems:"flex-start",gap:8,marginBottom:8}}><div style={{width:20,height:20,borderRadius:"50%",background:`${j.c}12`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontFamily:"'DM Sans',sans-serif",fontSize:9,fontWeight:700,color:j.c}}>{k+1}</div><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.text,lineHeight:1.4}}>{s}</span></div>))}
+                <div style={{borderTop:"1px solid #e8ebe5",marginTop:10,paddingTop:10}}>
+                  <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:C.grayText}}>Timeline: <strong style={{color:C.text}}>{j.duration}</strong> · {j.who}</div>
+                </div>
+                <button style={{marginTop:10,width:"100%",padding:"9px",background:j.c,color:C.white,border:"none",borderRadius:50,fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:700,cursor:"pointer"}}>Start This Journey</button>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:C.grayMid,marginBottom:14}}>Or Book Individual Services</div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+          {[
+            {e:"🏦",t:"LIDERA Credit Readiness",src:"Maib Credit Team",d:"45-min one-on-one: review financials, ODA eligibility, missing docs, product match.",c:C.maibGreen,badge:"Free",live:false,co:true},
+            {e:"📚",t:"LIDERA Accounting",src:"Maib Partners: Dynamic Solutions, ACM Consult, Jizdan & Partners +12 more",d:"Bookkeeping, tax reporting, payroll. Home-based business & maternity templates.",c:C.gold,badge:"First 3 mo free",live:true,co:true},
+            {e:"👥",t:"LIDERA HR & First Hire",src:"Maib HR Partners",d:"Contracts, salary project via maib business, flexible work arrangements.",c:C.sky,badge:"Subsidized",live:true,co:true},
+            {e:"📝",t:"LIDERA Business Plan",src:"Maib Business Consulting Partners",d:"Bank loan & ODA grant-ready business plans. Warm referral to Maib credit team.",c:C.purple,badge:"From 2,000 MDL",live:true,co:true},
+            {e:"⚖️",t:"LIDERA Legal Basics",src:"Partner Law Clinics",d:"Monthly group sessions: registration, contracts, IP, tax. Free for LIDERA members.",c:C.coral,badge:"Free monthly",live:false,co:false},
+            {e:"⚡",t:"LIDERA Energy & Compliance",src:"Certified Auditors",d:"Energy audit for cost savings + EU compliance check. Essential for export.",c:C.teal,badge:"Partner rate",live:false,co:false},
+          ].map((s,i)=>(
+            <div key={i} style={{background:C.white,borderRadius:14,padding:18,border:"1px solid #e8ebe5",display:"flex",gap:14}}>
+              <div style={{width:44,height:44,borderRadius:12,background:`${s.c}10`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0}}>{s.e}</div>
+              <div style={{flex:1}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:3}}>
+                  <div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,color:C.text}}>{s.t}<Tags live={s.live} co={s.co}/></div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:s.c,fontWeight:600}}>{s.src}</div></div>
+                  <span style={{padding:"2px 8px",borderRadius:50,background:`${s.c}10`,fontFamily:"'DM Sans',sans-serif",fontSize:9,fontWeight:600,color:s.c}}>{s.badge}</span>
+                </div>
+                <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.grayText,lineHeight:1.5,marginBottom:8}}>{s.d}</div>
+                <button style={{padding:"5px 14px",borderRadius:50,background:"transparent",border:`1px solid ${s.c}30`,fontFamily:"'DM Sans',sans-serif",fontSize:10,fontWeight:600,color:s.c,cursor:"pointer"}}>Book a Session</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>)}
+
+      {/* ═══ FREELANCER TRACK DETAIL — with Dashboard + Transition + Women Benefits ═══ */}
+      {active==="freelancer"&&(<div>
+        <BackBtn/>
+        <h3 style={{fontFamily:"'DM Sans',sans-serif",fontSize:22,fontWeight:800,color:C.text,margin:"0 0 8px"}}>Freelancer Track</h3>
+        <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:C.grayText,margin:"0 0 28px",maxWidth:600}}>Built on Maib's card red infrastructure — enhanced with tools, transition paths, and benefits designed for women freelancers.</p>
+
+        {/* Freelancer Dashboard */}
+        <div style={{background:C.white,borderRadius:20,padding:28,border:"1px solid #e8ebe5",marginBottom:24}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+            <div style={{display:"flex",alignItems:"center",gap:10}}><span style={{fontSize:22}}>📊</span><div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,fontWeight:700,color:C.text}}>LIDERA Freelancer Dashboard</div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.grayText}}>Your income, taxes, and invoices — all in one view</div></div></div>
+            <span style={{padding:"4px 12px",borderRadius:50,background:`${C.sky}10`,fontFamily:"'DM Sans',sans-serif",fontSize:10,fontWeight:600,color:C.sky}}>Linked to card red</span>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:16}}>
+            {[{l:"Monthly Income",v:"MDL 42,500",sub:"PayPal + Bank",c:C.maibGreen,icon:"💰"},{l:"YTD Income",v:"MDL 127,500",sub:"10.6% of 1.2M limit",c:C.gold,icon:"📈"},{l:"Tax Due (15%)",v:"MDL 6,375",sub:"Due Mar 25",c:C.coral,icon:"🧮"},{l:"Open Invoices",v:"3 pending",sub:"MDL 18,200 total",c:C.sky,icon:"📄"}].map((m,i)=>(
+              <div key={i} style={{background:C.grayLight,borderRadius:12,padding:14}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}><span style={{fontSize:16}}>{m.icon}</span><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:m.c,fontWeight:600}}>{m.sub}</span></div>
+                <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:C.grayText}}>{m.l}</div>
+                <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,fontWeight:800,color:C.text}}>{m.v}</div>
+              </div>
+            ))}
+          </div>
+          {/* 1.2M threshold bar */}
+          <div style={{background:C.grayLight,borderRadius:12,padding:14}}>
+            <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600,color:C.text}}>Annual Income vs. 1.2M MDL Threshold</span><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:700,color:C.gold}}>10.6%</span></div>
+            <div style={{height:10,background:"#e8ebe5",borderRadius:5,overflow:"hidden"}}><div style={{height:"100%",width:"10.6%",background:`linear-gradient(90deg,${C.maibGreen},${C.gold})`,borderRadius:5}}/></div>
+            <div style={{display:"flex",justifyContent:"space-between",marginTop:6}}><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:C.grayText}}>MDL 127,500 earned</span><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:C.grayText}}>MDL 1,200,000 limit (15% → 35%)</span></div>
+          </div>
+        </div>
+
+        {/* Freelancer → Business Transition */}
+        <div style={{background:`linear-gradient(135deg,${C.deep},#0d2818)`,borderRadius:20,padding:32,marginBottom:24,color:C.white}}>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}><span style={{fontSize:20}}>🔄</span><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:C.gold}}>Transition Path: Freelancer → Business Owner</span></div>
+          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:C.grayMid,margin:"0 0 20px",maxWidth:500}}>When you're ready to scale beyond freelancing, LIDERA guides you through every step — with automatic alerts as you approach the threshold.</p>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+            {[{step:"1",icon:"⚠️",t:"Threshold Alert",d:"Auto-notification when your income approaches 1.2M MDL annual limit",c:C.gold},{step:"2",icon:"📋",t:"SRL Setup Guide",d:"Step-by-step company registration with document templates and legal basics",c:C.sky},{step:"3",icon:"📦",t:"Start Package Migration",d:"Seamless transition: business account + card + Smart POS via LIDERA Start Package",c:C.maibGreen},{step:"4",icon:"👥",t:"First Employee Setup",d:"Salary project activation, employment contracts, HR partner onboarding",c:C.purple}].map((s,i)=>(
+              <div key={i} style={{background:`${C.white}08`,borderRadius:14,padding:18,border:`1px solid ${C.white}10`}}>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}><div style={{width:24,height:24,borderRadius:"50%",background:`${s.c}25`,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:800,color:s.c}}>{s.step}</div><span style={{fontSize:18}}>{s.icon}</span></div>
+                <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,color:C.white,marginBottom:4}}>{s.t}</div>
+                <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.grayMid,lineHeight:1.5}}>{s.d}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Women-specific benefits */}
+        <div style={{background:C.white,borderRadius:20,padding:28,border:`1px solid ${C.sky}20`,marginBottom:24}}>
+          <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:C.sky,marginBottom:16}}>Women Freelancer Benefits — LIDERA Exclusive</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+            {[{icon:"👶",t:"Childcare Co-working",d:"10% discount at Tekwill and partner co-working spaces in Chișinău (via card red)"},{icon:"🏥",t:"Health Check-ups",d:"Annual women's health screening via LIDERA Social Package + 15% iHerb wellness"},{icon:"🏪",t:"Free Marketplace Profile",d:"List your services on LIDERA Directory at no cost — visible to all network members"},{icon:"🤝",t:"Mentoring Priority",d:"Priority access to Mentor Match — AI-paired by your freelance sector"}].map((b,i)=>(
+              <div key={i} style={{background:C.grayLight,borderRadius:14,padding:18,textAlign:"center"}}>
+                <div style={{fontSize:28,marginBottom:8}}>{b.icon}</div>
+                <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,color:C.text,marginBottom:4}}>{b.t}</div>
+                <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.grayText,lineHeight:1.5}}>{b.d}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Module progress */}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+          {[{n:"Module 1",t:"Register & Start",icon:"📋",done:true},{n:"Module 2",t:"Bank & Invoice",icon:"🏦",done:true},{n:"Module 3",t:"Price & Sell",icon:"💰",done:false},{n:"Module 4",t:"Hire & Scale",icon:"🚀",done:false}].map((m,i)=>(
+            <div key={i} style={{background:C.white,borderRadius:14,padding:20,textAlign:"center",border:`1px solid ${m.done?C.sky:"#e8ebe5"}`}}>
+              <div style={{fontSize:28,marginBottom:6}}>{m.icon}</div>
+              <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:C.grayText}}>{m.n}</div>
+              <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,fontWeight:700,color:C.text,marginTop:2}}>{m.t}</div>
+              {m.done&&<div style={{marginTop:6,color:C.sky,display:"flex",justifyContent:"center"}}>{I.check}</div>}
+              {!m.done&&<button style={{marginTop:8,padding:"5px 14px",borderRadius:50,background:C.sky,color:C.white,border:"none",fontFamily:"'DM Sans',sans-serif",fontSize:10,fontWeight:600,cursor:"pointer"}}>Start</button>}
+            </div>
+          ))}
+        </div>
+      </div>)}
+
+      {/* ═══ SKILL BITES DETAIL ═══ */}
+      {active==="skills"&&(<div>
+        <BackBtn/>
+        <h3 style={{fontFamily:"'DM Sans',sans-serif",fontSize:22,fontWeight:800,color:C.text,margin:"0 0 8px"}}>Skill Bites</h3>
+        <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:C.grayText,margin:"0 0 24px"}}>5-minute tutorials that pack a punch — in Romanian and Russian.</p>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:16}}>
+          {[{e:"🏦",t:"Understanding Credit",d:"Loans, lines & guarantees",dur:"5 min",badge:"Popular",c:C.maibGreen},{e:"📱",t:"Digital Banking",d:"maibank, QR MIA, e-payments",dur:"4 min",badge:"New",c:C.sky},{e:"📊",t:"Financial Statements",d:"Balance sheets & P&L",dur:"6 min",badge:"Essential",c:C.gold},{e:"🧮",t:"Pricing Right",d:"Costs, margins & competition",dur:"5 min",badge:"Trending",c:C.coral}].map((v,i)=>(
+            <div key={i} style={{background:C.white,borderRadius:16,overflow:"hidden",border:"1px solid #e8ebe5",cursor:"pointer",transition:"all 0.25s"}} onMouseEnter={e=>e.currentTarget.style.transform="translateY(-3px)"} onMouseLeave={e=>e.currentTarget.style.transform="translateY(0)"}>
+              <div style={{height:90,background:`linear-gradient(135deg,${v.c}15,${v.c}05)`,display:"flex",alignItems:"center",justifyContent:"center",position:"relative"}}><span style={{fontSize:36}}>{v.e}</span><div style={{position:"absolute",top:8,right:8,padding:"2px 8px",borderRadius:50,background:v.c,fontFamily:"'DM Sans',sans-serif",fontSize:9,fontWeight:700,color:C.white}}>{v.badge}</div><div style={{position:"absolute",bottom:8,left:8,width:28,height:28,borderRadius:"50%",background:"rgba(255,255,255,0.9)",display:"flex",alignItems:"center",justifyContent:"center",color:v.c}}>{I.play}</div></div>
+              <div style={{padding:"12px 14px"}}><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,color:C.text,marginBottom:3}}>{v.t}</div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.grayText}}>{v.d} · ⏱ {v.dur}</div></div>
+            </div>
+          ))}
+        </div>
+      </div>)}
+
+      {/* ═══ LIVE SESSIONS DETAIL ═══ */}
+      {active==="live"&&(<div>
+        <BackBtn/>
+        <h3 style={{fontFamily:"'DM Sans',sans-serif",fontSize:22,fontWeight:800,color:C.text,margin:"0 0 8px"}}>Live Sessions</h3>
+        <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:C.grayText,margin:"0 0 24px"}}>Real talk from real practitioners. Ask anything, learn fast.</p>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+          {[{t:"How to Get Your First Business Loan",sp:"Kostiantyn Isaiev",rl:"Head of Micro Sales, Maib",dt:"Mar 20",tm:"14:00",live:true,att:124,c:C.maibGreen},{t:"Digital Marketing on a Budget",sp:"Irina Colesnicova",rl:"Digital Strategy Consultant",dt:"Mar 27",tm:"15:00",live:true,att:89,c:C.coral},{t:"Exporting Moldovan Products to EU",sp:"Elena Varta",rl:"Trade Promotion Expert",dt:"Apr 3",tm:"14:00",live:false,att:67,c:C.sky},{t:"Seasonal Cash Flow for Agriculture",sp:"Nicolae Croitoru",rl:"Founder, Invest Europeo",dt:"Apr 10",tm:"11:00",live:false,att:45,c:C.gold}].map((w,i)=>(
+            <div key={i} style={{background:C.white,borderRadius:16,overflow:"hidden",border:"1px solid #e8ebe5",display:"flex"}}>
+              <div style={{width:80,background:`linear-gradient(180deg,${w.c}20,${w.c}08)`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:12,flexShrink:0}}><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,fontWeight:700,color:w.c}}>{w.dt.split(" ")[0]}</div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:26,fontWeight:800,color:C.text}}>{w.dt.split(" ")[1]}</div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:C.grayText}}>{w.tm}</div>{w.live&&<div style={{marginTop:4,padding:"2px 6px",borderRadius:50,background:"#F44",fontFamily:"'DM Sans',sans-serif",fontSize:8,fontWeight:700,color:C.white}}>● LIVE</div>}</div>
+              <div style={{padding:"14px 16px",flex:1}}><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,fontWeight:700,color:C.text,marginBottom:6,lineHeight:1.3}}>{w.t}</div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600,color:C.text}}>{w.sp}</div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:C.grayText,marginBottom:8}}>{w.rl}</div><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.grayText}}>👩‍💻 {w.att}</span><button style={{padding:"5px 14px",borderRadius:50,background:w.c,color:C.white,border:"none",fontFamily:"'DM Sans',sans-serif",fontSize:10,fontWeight:700,cursor:"pointer"}}>{w.live?"Join":"Register"}</button></div></div>
+            </div>
+          ))}
+        </div>
+      </div>)}
+
+      {/* ═══ MENTOR MATCH DETAIL ═══ */}
+      {active==="mentors"&&(<div>
+        <BackBtn/>
+        <h3 style={{fontFamily:"'DM Sans',sans-serif",fontSize:22,fontWeight:800,color:C.text,margin:"0 0 8px"}}>Mentor Match</h3>
+        <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:C.grayText,margin:"0 0 24px",maxWidth:560}}>Skip years of trial and error — AI-matched with women who've already built what you're building.</p>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+          {[{name:"Elena Popescu",role:"Agriculture & Export",exp:"15 yrs",e:"🌾"},{name:"Ana Moraru",role:"Digital & Tech",exp:"8 yrs",e:"💻"},{name:"Natalia Cebotari",role:"Food & Wine",exp:"12 yrs",e:"🍷"},{name:"Maria Lungu",role:"Tourism",exp:"10 yrs",e:"🏨"}].map((m,i)=>(
+            <div key={i} style={{background:C.white,borderRadius:14,padding:"20px 16px",border:"1px solid #e8ebe5",textAlign:"center",cursor:"pointer",transition:"all 0.25s"}} onMouseEnter={e=>e.currentTarget.style.transform="translateY(-3px)"} onMouseLeave={e=>e.currentTarget.style.transform="translateY(0)"}>
+              <div style={{width:50,height:50,borderRadius:"50%",background:C.lightGreen,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 10px",fontSize:22}}>{m.e}</div>
+              <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,fontWeight:700,color:C.text}}>{m.name}</div>
+              <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.grayText,marginTop:2}}>{m.role}</div>
+              <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:C.maibGreen,fontWeight:600,marginTop:4}}>{m.exp}</div>
+              <button style={{marginTop:10,padding:"6px 16px",borderRadius:50,border:`1px solid ${C.maibGreen}30`,background:"transparent",fontFamily:"'DM Sans',sans-serif",fontSize:10,fontWeight:600,color:C.maibGreen,cursor:"pointer"}}>Connect</button>
+            </div>
+          ))}
+        </div>
+      </div>)}
+
+    </div>
+  </section>);
+}
+
+// ═══════════════════════════════════════════
+// NETWORK — Connect + Trade unified
+// ═══════════════════════════════════════════
+function NetworkPage(){
+  const[tab,setTab]=useState("connect");
+  const biz=[{name:"Nata's Organic Farm",sector:"Agriculture",loc:"Orhei",r:4.9,rev:47,badge:"Top Seller",e:"🌻"},{name:"Beauty by Ana",sector:"Beauty",loc:"Chișinău",r:4.8,rev:89,badge:"Featured",e:"💆‍♀️"},{name:"Moldova Wine Sisters",sector:"Food & Beverage",loc:"Cricova",r:5.0,rev:63,badge:"Export Ready",e:"🍇"},{name:"TechWomen Studio",sector:"Technology",loc:"Chișinău",r:4.7,rev:34,badge:"New",e:"🖥️"},{name:"Pensiunea Maria",sector:"Tourism",loc:"Soroca",r:4.9,rev:112,badge:"Top Rated",e:"🏡"},{name:"Artisan Textiles",sector:"Crafts",loc:"Bălți",r:4.8,rev:56,badge:"Verified",e:"🧵"}];
+
+  return(
+  <section style={{background:C.offWhite,padding:"96px 24px"}}>
+    <div style={{maxWidth:1200,margin:"0 auto"}}>
+      <SectionLabel color={C.sky} text="Pillar 3 · LIDERA Network"/>
+      <h2 style={{fontFamily:"'DM Sans',sans-serif",fontSize:"clamp(26px,4vw,40px)",fontWeight:800,color:C.text,margin:"0 0 8px"}}>LIDERA Network</h2>
+      <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:C.grayText,margin:"0 0 28px",maxWidth:560}}>Build relationships, find opportunities, and grow your market — all in one place.</p>
+
+      {/* Connect / Trade toggle */}
+      <div style={{display:"flex",gap:4,marginBottom:36,background:C.white,borderRadius:14,padding:4,border:"1px solid #e8ebe5",width:"fit-content"}}>
+        {[{k:"connect",label:"🤝 Connect",sub:"Community & relationships"},{k:"trade",label:"🏪 Trade",sub:"Marketplace & commerce"}].map(t=>(
+          <button key={t.k} onClick={()=>setTab(t.k)} style={{padding:"12px 28px",borderRadius:10,border:"none",cursor:"pointer",transition:"all 0.25s",background:tab===t.k?C.text:"transparent",color:tab===t.k?C.white:C.grayText,fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:tab===t.k?700:500}}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* ═══ CONNECT TAB ═══ */}
+      {tab==="connect"&&(<div>
+        {/* Community cards */}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:16,marginBottom:48}}>
+          {[
+            {icon:I.users,c:C.maibGreen,t:"Networking Forums",d:"Sector-specific groups where women entrepreneurs share insights, ask questions, and support each other: AgricolaHub Circle, Beauty Network, Tech Women Moldova, Tourism Guild, Food Producers Forum.",s:"12 active groups",e:"💬",live:false,co:false},
+            {icon:I.award,c:C.gold,t:"Annual Summit & Awards",d:"Moldova's premier women in business event — keynote speakers, pitch competitions, LIDERA Excellence Awards in 5 categories, and high-level networking.",s:"300+ attendees",e:"🏆",live:false,co:false},
+            {icon:I.coffee,c:C.teal,t:"Business Lunch Series",d:"Half-yearly sit-down lunch featuring a successful woman entrepreneur sharing her journey — honest stories, practical lessons, and real connections.",s:"Every 6 months",e:"🍽️",live:false,co:true},
+          ].map((x,i)=>(
+            <div key={i} style={{background:C.white,borderRadius:20,padding:28,border:"1px solid #e8ebe5",transition:"all 0.3s",cursor:"pointer",position:"relative",overflow:"hidden"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-4px)";e.currentTarget.style.boxShadow=`0 12px 30px ${x.c}12`;}} onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none";}}>
+              <div style={{position:"absolute",top:-20,right:-20,width:80,height:80,borderRadius:"50%",background:`${x.c}06`}}/>
+              <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:6}}>
+                <div style={{width:48,height:48,borderRadius:12,background:`${x.c}10`,display:"flex",alignItems:"center",justifyContent:"center",color:x.c}}>{x.icon}</div>
+                <div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:17,fontWeight:700,color:C.text}}>{x.t}</div><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:600,color:x.c}}>{x.s}</span></div>
+              </div>
+              <div style={{marginBottom:10,marginLeft:60}}><Tags live={x.live} co={x.co}/></div>
+              <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:C.grayText,lineHeight:1.7,margin:0}}>{x.d}</p>
+            </div>
+          ))}
+        </div>
+
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:16,marginBottom:48}}>
+          {[
+            {icon:I.zap,c:C.purple,t:"LIDERA Hackathon",d:"Annual women-only business hackathon — 48 hours of ideation, prototyping, and pitching. Free participation for all LIDERA members. Winners get grant funding + mentorship.",s:"Annual event",e:"⚡",live:false,co:true},
+            {icon:I.book,c:C.coral,t:"Peer Learning Circles",d:"Small groups of 8-10 women entrepreneurs at similar business stages. Monthly structured sessions — online or at Maib branch meeting rooms. Facilitator-guided knowledge exchange.",s:"Monthly sessions",e:"📖",live:false,co:false},
+            {icon:I.chart,c:C.sky,t:"Success Stories",d:"Video profiles from maib's 'Faceri care inspiră' series: Tatiana Pavliuc (Plaiul Bîrlădean), Svetlana Ciceli (Winkraft Business Group), and more — featured across maib.md and social media.",s:"50+ stories",e:"✨",live:true,co:false},
+          ].map((x,i)=>(
+            <div key={i} style={{background:C.white,borderRadius:20,padding:28,border:"1px solid #e8ebe5",transition:"all 0.3s",cursor:"pointer",position:"relative",overflow:"hidden"}} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-4px)";e.currentTarget.style.boxShadow=`0 12px 30px ${x.c}12`;}} onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none";}}>
+              <div style={{position:"absolute",top:-20,right:-20,width:80,height:80,borderRadius:"50%",background:`${x.c}06`}}/>
+              <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:6}}>
+                <div style={{width:48,height:48,borderRadius:12,background:`${x.c}10`,display:"flex",alignItems:"center",justifyContent:"center",color:x.c}}>{x.icon}</div>
+                <div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:17,fontWeight:700,color:C.text}}>{x.t}</div><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:600,color:x.c}}>{x.s}</span></div>
+              </div>
+              <div style={{marginBottom:10,marginLeft:60}}><Tags live={x.live} co={x.co}/></div>
+              <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:C.grayText,lineHeight:1.7,margin:0}}>{x.d}</p>
+            </div>
+          ))}
+        </div>
+      </div>)}
+
+      {/* ═══ TRADE TAB ═══ */}
+      {tab==="trade"&&(<div>
+        {/* Business Directory */}
+        <h3 style={{fontFamily:"'DM Sans',sans-serif",fontSize:20,fontWeight:800,color:C.text,margin:"0 0 20px"}}>Women's Business Directory</h3>
+        <div style={{display:"flex",gap:10,marginBottom:24,flexWrap:"wrap"}}>
+          <div style={{flex:1,minWidth:260,position:"relative"}}><span style={{position:"absolute",left:14,top:"50%",transform:"translateY(-50%)",color:C.grayMid}}>{I.search}</span><input placeholder="Search businesses, products, services..." style={{width:"100%",padding:"12px 12px 12px 40px",borderRadius:12,border:"1px solid #e8ebe5",fontFamily:"'DM Sans',sans-serif",fontSize:13,boxSizing:"border-box",background:C.white}}/></div>
+          {["All","Agriculture","Beauty","Food","Tourism","Tech"].map((s,i)=>(<Pill key={i} active={i===0} color={C.sky}>{s}</Pill>))}
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:16,marginBottom:48}}>
+          {biz.map((b,i)=>(<div key={i} style={{background:C.white,borderRadius:14,padding:20,cursor:"pointer",transition:"all 0.25s",border:"1px solid #e8ebe5"}} onMouseEnter={e=>{e.currentTarget.style.borderColor=C.sky;e.currentTarget.style.transform="translateY(-2px)";}} onMouseLeave={e=>{e.currentTarget.style.borderColor="#e8ebe5";e.currentTarget.style.transform="translateY(0)";}}><div style={{display:"flex",justifyContent:"space-between",marginBottom:14}}><div style={{display:"flex",alignItems:"center",gap:12}}><div style={{width:46,height:46,borderRadius:12,background:C.grayLight,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22}}>{b.e}</div><div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,fontWeight:700,color:C.text}}>{b.name}</div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.grayText}}>{b.sector}</div></div></div><span style={{padding:"3px 9px",borderRadius:50,background:`${C.maibGreen}12`,fontFamily:"'DM Sans',sans-serif",fontSize:10,fontWeight:600,color:C.maibGreen}}>{b.badge}</span></div><div style={{display:"flex",justifyContent:"space-between"}}><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.grayText}}>{I.pin} {b.loc}</span><div style={{display:"flex",alignItems:"center",gap:4}}><span style={{color:C.gold}}>{I.star}</span><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600}}>{b.r}</span><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.grayText}}>({b.rev})</span></div></div></div>))}
+        </div>
+
+        {/* Virtual Trade Fair */}
+        <div style={{background:`linear-gradient(135deg,${C.deep},#0a1628)`,borderRadius:24,overflow:"hidden",position:"relative",marginBottom:32}}>
+          <div style={{position:"absolute",inset:0,backgroundImage:`radial-gradient(circle at 20% 80%, ${C.sky}15 0%, transparent 50%), radial-gradient(circle at 80% 20%, ${C.purple}12 0%, transparent 50%)`}}/>
+          <div style={{padding:40,position:"relative",zIndex:2,display:"grid",gridTemplateColumns:"1fr 1fr",gap:36,alignItems:"center"}}>
+            <div>
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}><span style={{color:C.sky}}>{I.video}</span><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:700,letterSpacing:2,textTransform:"uppercase",color:C.sky}}>Virtual Trade Fair</span></div>
+              <h3 style={{fontFamily:"'DM Sans',sans-serif",fontSize:26,fontWeight:800,color:C.white,margin:"0 0 10px"}}>Moldova Women's Business Expo 2026</h3>
+              <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:C.grayMid,lineHeight:1.7,margin:"0 0 20px"}}>Showcase products, meet international buyers, build partnerships — quarterly events with live matchmaking.</p>
+              <div style={{display:"flex",gap:20,marginBottom:20}}>{[{v:"Apr 24-25",l:"Next Event"},{v:"200+",l:"Exhibitors"},{v:"50+",l:"Int'l Buyers"},{v:"Free",l:"For members"}].map((d,i)=>(<div key={i}><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,fontWeight:800,color:C.white}}>{d.v}</div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:C.grayMid}}>{d.l}</div></div>))}</div>
+              <Btn bg={C.sky} color={C.white}>Register for Expo</Btn>
+            </div>
+            <div style={{background:`${C.white}06`,borderRadius:20,padding:20,border:`1px solid ${C.white}08`}}>
+              <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:600,color:C.grayMid,letterSpacing:1,textTransform:"uppercase",marginBottom:14}}>Virtual Pavilions</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+                {[{e:"🍇",n:"Wine",s:24,c:C.purple},{e:"🌾",n:"Agri",s:38,c:C.maibGreen},{e:"🧵",n:"Crafts",s:19,c:C.coral},{e:"💻",n:"Tech",s:15,c:C.sky}].map((b,i)=>(<div key={i} style={{background:`${C.white}06`,borderRadius:12,padding:14,textAlign:"center",border:`1px solid ${C.white}08`,cursor:"pointer",transition:"all 0.2s"}} onMouseEnter={e=>e.currentTarget.style.borderColor=b.c} onMouseLeave={e=>e.currentTarget.style.borderColor=`${C.white}08`}><div style={{fontSize:24,marginBottom:4}}>{b.e}</div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:700,color:C.white}}>{b.n}</div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:C.grayMid}}>{b.s} exhibitors</div></div>))}
+              </div>
+              <div style={{marginTop:10,padding:"8px 12px",borderRadius:8,background:`${C.gold}10`,border:`1px solid ${C.gold}20`,display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:12}}>🎤</span><div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,fontWeight:600,color:C.white}}>Live: Buyer Matchmaking</div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:9,color:C.grayMid}}>Apr 24, 11:00 — EU Retail Panel</div></div></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Supply Chain + Export + Procurement */}
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16}}>
+          <div style={{background:C.white,borderRadius:20,padding:28,border:"1px solid #e8ebe5"}}>
+            <div style={{fontSize:28,marginBottom:10}}>🔗</div>
+            <h4 style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,fontWeight:700,color:C.text,margin:"0 0 4px"}}>Supply Chain Finance</h4>
+            <div style={{marginBottom:8}}><LiveTag/></div>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.grayText,lineHeight:1.6,margin:"0 0 14px"}}>Maib's Local Factoring & Corporate Factoring for women suppliers — plus Partnership Loans at 0% interest for equipment & supplies.</p>
+            <Btn bg={C.text} color={C.white}>Learn More</Btn>
+          </div>
+          <div style={{background:C.white,borderRadius:20,padding:28,border:"1px solid #e8ebe5"}}>
+            <div style={{fontSize:28,marginBottom:10}}>🌍</div>
+            <h4 style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,fontWeight:700,color:C.text,margin:"0 0 4px"}}>Export Readiness Toolkit</h4>
+            <div style={{marginBottom:8}}><LiveTag/></div>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.grayText,lineHeight:1.6,margin:"0 0 14px"}}>EU market guide + Maib's international resources: SWIFT transfers, FX operations (EUR/USD/RON/GBP), documentation services, and bank guarantees.</p>
+            <Btn bg={C.text} color={C.white}>Get Started</Btn>
+          </div>
+          <div style={{background:C.white,borderRadius:20,padding:28,border:"1px solid #e8ebe5"}}>
+            <div style={{fontSize:28,marginBottom:10}}>🏛️</div>
+            <h4 style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,fontWeight:700,color:C.text,margin:"0 0 4px"}}>Government Procurement</h4>
+            <div style={{marginBottom:8}}><LiveTag/><span style={{marginLeft:4}}><CoTag/></span></div>
+            <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.grayText,lineHeight:1.6,margin:"0 0 14px"}}>Access to tender.maib.md — Maib's existing public procurement platform. Training on how to navigate government tender portals and win contracts.</p>
+            <Btn bg={C.text} color={C.white}>Explore</Btn>
+          </div>
+        </div>
+      </div>)}
+
+    </div>
+  </section>);
+}
+
+// Footer
+function Footer(){
+  return(
+  <footer style={{background:C.deep,padding:"56px 24px 28px",color:C.white}}>
+    <div style={{maxWidth:1200,margin:"0 auto"}}>
+      <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr 1fr",gap:32,marginBottom:40}}>
+        <div><Logo s={24}/><p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:C.grayMid,lineHeight:1.8,margin:"14px 0 0",maxWidth:240}}>Moldova's premier digital ecosystem for women entrepreneurs — powered by the country's leading bank.</p></div>
+        {[{t:"Finance",ls:["Start Package","Startup Loan","Micro Package","Overnight","Revolving Credit","Partnership Loans","Cashback Rewards"]},{t:"Growth Hub",ls:["Programs","Consultancy","Freelancer Track","Skill Bites","Live Sessions","Mentoring"]},{t:"Network: Connect",ls:["Networking Forums","Annual Summit","Business Lunch","Hackathon","Peer Circles","Success Stories"]},{t:"Network: Trade",ls:["Business Directory","Virtual Trade Fair","Supply Chain Finance","Export Toolkit","Gov. Procurement"]}].map((col,i)=>(
+          <div key={i}><h4 style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:700,color:C.white,margin:"0 0 14px"}}>{col.t}</h4>{col.ls.map((l,j)=>(<div key={j} style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:C.grayMid,marginBottom:8,cursor:"pointer"}} onMouseEnter={e=>e.target.style.color=C.maibGreen} onMouseLeave={e=>e.target.style.color=C.grayMid}>{l}</div>))}</div>
+        ))}
+      </div>
+      <div style={{borderTop:`1px solid ${C.white}08`,paddingTop:20,display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:10}}><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.grayMid}}>© 2026 BC "MAIB" S.A. · Maib LIDERA · All rights reserved</span><div style={{display:"flex",gap:16}}>{["Privacy","Terms","Contact","1314"].map((l,i)=>(<span key={i} style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.grayMid,cursor:"pointer"}}>{l}</span>))}</div></div>
+      <div style={{textAlign:"center",marginTop:12,paddingTop:10,borderTop:`1px solid ${C.white}04`}}><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:C.grayMid,letterSpacing:1}}>Concept & prototype developed by Devrim Ziya Tavil</span></div>
+    </div>
+  </footer>);
+}
+
+// ═══════════════════════════════════════════
+// APP
+// ═══════════════════════════════════════════
+function App(){
+  const[page,setPage]=useState("home");
+  const ref=useRef(null);
+  const nav=(p)=>{setPage(p);if(ref.current)ref.current.scrollTo({top:0,behavior:"smooth"});};
+  return(
+  <div ref={ref} style={{width:"100%",height:"100vh",overflow:"auto",background:C.white}}>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400&display=swap" rel="stylesheet"/>
+    <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:1000,background:`${C.deep}E8`,backdropFilter:"blur(20px)",borderBottom:`1px solid ${C.white}06`}}>
+      <div style={{maxWidth:1200,margin:"0 auto",padding:"0 24px",display:"flex",justifyContent:"space-between",alignItems:"center",height:58}}>
+        <div style={{cursor:"pointer"}} onClick={()=>nav("home")}><Logo s={22}/></div>
+        <div style={{display:"flex",alignItems:"center",gap:2}}>{[{k:"home",l:"Home"},{k:"finance",l:"Finance"},{k:"academy",l:"Growth Hub"},{k:"network",l:"Network"}].map(n=>(<button key={n.k} onClick={()=>nav(n.k)} style={{padding:"7px 14px",border:"none",borderRadius:8,cursor:"pointer",background:page===n.k?`${C.maibGreen}12`:"transparent",color:page===n.k?C.maibGreen:`${C.white}80`,fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:page===n.k?600:500,transition:"all 0.2s"}}>{n.l}</button>))}</div>
+        <div style={{display:"flex",alignItems:"center",gap:10}}><button style={{width:32,height:32,borderRadius:8,border:`1px solid ${C.white}12`,background:"transparent",color:`${C.white}60`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>{I.bell}</button><button style={{padding:"7px 18px",background:C.maibGreen,color:C.dark,border:"none",borderRadius:50,fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:700,cursor:"pointer"}}>Sign In</button></div>
+      </div>
+    </nav>
+    {page==="home"&&<><Hero nav={nav}/><Pillars nav={nav}/><BeyondBanking/></>}
+    {page==="finance"&&<div style={{paddingTop:58}}><FinancePage/></div>}
+    {page==="academy"&&<div style={{paddingTop:58}}><AcademyPage/></div>}
+    {page==="network"&&<div style={{paddingTop:58}}><NetworkPage/></div>}
+    <Footer/>
+  </div>);
+}
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(React.createElement(App));
+  </script>
+</body>
+</html>
