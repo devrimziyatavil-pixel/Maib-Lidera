@@ -316,6 +316,181 @@ function FinancePage(){
 }
 
 // ═══════════════════════════════════════════
+// DUPONT ANALYSIS MODEL
+// ═══════════════════════════════════════════
+function DuPontPage(){
+  const[mode,setMode]=useState("3");
+  const[step,setStep]=useState(0);
+  const[data,setData]=useState({revenue:1200000,netIncome:96000,totalAssets:800000,equity:320000,ebit:140000,ebt:120000});
+  useEffect(()=>{if(step===1){const t=setTimeout(()=>setStep(2),2000);return()=>clearTimeout(t);}},[step]);
+  const pct=v=>(v*100).toFixed(1);
+  const npm=data.revenue?data.netIncome/data.revenue:0;
+  const at=data.totalAssets?data.revenue/data.totalAssets:0;
+  const em=data.equity?data.totalAssets/data.equity:0;
+  const roe3=npm*at*em;
+  const tb=data.ebt?data.netIncome/data.ebt:0;
+  const ib=data.ebit?data.ebt/data.ebit:0;
+  const ebitM=data.revenue?data.ebit/data.revenue:0;
+  const roe5=tb*ib*ebitM*at*em;
+  const roe=mode==="3"?roe3:roe5;
+  const grade=v=>{if(v>=0.20)return{l:"Excellent",c:C.maibGreen,e:"🏆"};if(v>=0.15)return{l:"Strong",c:C.sky,e:"💪"};if(v>=0.10)return{l:"Good",c:C.gold,e:"👍"};if(v>=0.05)return{l:"Fair",c:"#FF8C00",e:"⚠️"};return{l:"Weak",c:C.coral,e:"🔴"};};
+  const cg=(v,th)=>{if(v>=th[0])return C.maibGreen;if(v>=th[1])return C.gold;return C.coral;};
+  const g=grade(roe);
+  const roePct=Math.min(Math.max(roe*100,0),100);
+  const Inp=({label,k,hint})=>(<div style={{marginBottom:12}}><div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,fontWeight:600,color:C.white}}>{label}</span>{hint&&<span style={{fontFamily:"'DM Sans',sans-serif",fontSize:9,color:C.grayMid}}>{hint}</span>}</div><input value={data[k]} onChange={e=>setData(d=>({...d,[k]:parseFloat(e.target.value.replace(/[^0-9.-]/g,""))||0}))} style={{width:"100%",padding:"10px 14px",borderRadius:10,border:`1px solid ${C.white}15`,background:`${C.white}06`,color:C.white,fontFamily:"'DM Sans',sans-serif",fontSize:14,fontWeight:600,boxSizing:"border-box"}}/></div>);
+
+  const factors3=[
+    {label:"Net Profit Margin",formula:"Net Income ÷ Revenue",value:pct(npm)+"%",c:C.maibGreen,icon:"📊",bar:Math.min(npm/0.20*100,100),detail:`MDL ${data.netIncome.toLocaleString()} / MDL ${data.revenue.toLocaleString()}`},
+    {label:"Asset Turnover",formula:"Revenue ÷ Total Assets",value:at.toFixed(2)+"x",c:C.gold,icon:"🔄",bar:Math.min(at/3*100,100),detail:`MDL ${data.revenue.toLocaleString()} / MDL ${data.totalAssets.toLocaleString()}`},
+    {label:"Equity Multiplier",formula:"Total Assets ÷ Equity",value:em.toFixed(2)+"x",c:C.purple,icon:"⚖️",bar:Math.min(em/5*100,100),detail:`MDL ${data.totalAssets.toLocaleString()} / MDL ${data.equity.toLocaleString()}`},
+  ];
+  const factors5=[
+    {label:"Tax Burden",formula:"Net Income ÷ EBT",value:pct(tb)+"%",c:C.teal,icon:"🏛️",bar:Math.min(tb*100,100),detail:`MDL ${data.netIncome.toLocaleString()} / MDL ${data.ebt.toLocaleString()}`},
+    {label:"Interest Burden",formula:"EBT ÷ EBIT",value:pct(ib)+"%",c:C.coral,icon:"💰",bar:Math.min(ib*100,100),detail:`MDL ${data.ebt.toLocaleString()} / MDL ${data.ebit.toLocaleString()}`},
+    {label:"EBIT Margin",formula:"EBIT ÷ Revenue",value:pct(ebitM)+"%",c:C.maibGreen,icon:"📈",bar:Math.min(ebitM/0.25*100,100),detail:`MDL ${data.ebit.toLocaleString()} / MDL ${data.revenue.toLocaleString()}`},
+    {label:"Asset Turnover",formula:"Revenue ÷ Total Assets",value:at.toFixed(2)+"x",c:C.gold,icon:"🔄",bar:Math.min(at/3*100,100),detail:`MDL ${data.revenue.toLocaleString()} / MDL ${data.totalAssets.toLocaleString()}`},
+    {label:"Equity Multiplier",formula:"Total Assets ÷ Equity",value:em.toFixed(2)+"x",c:C.purple,icon:"⚖️",bar:Math.min(em/5*100,100),detail:`MDL ${data.totalAssets.toLocaleString()} / MDL ${data.equity.toLocaleString()}`},
+  ];
+  const factors=mode==="3"?factors3:factors5;
+
+  const recs=[];
+  if(npm<0.08)recs.push({icon:"📊",t:"Improve Profit Margins",d:"Net margin of "+pct(npm)+"% is below the 8% benchmark. Focus on pricing strategy or cost optimization.",c:C.coral});
+  if(at<1.0)recs.push({icon:"🔄",t:"Boost Asset Efficiency",d:"Asset turnover of "+at.toFixed(2)+"x suggests underutilized assets. Optimize inventory or fixed asset usage.",c:C.gold});
+  if(em>3.5)recs.push({icon:"⚠️",t:"Monitor Leverage",d:"Equity multiplier of "+em.toFixed(2)+"x indicates high leverage. Ensure debt servicing capacity remains healthy.",c:C.coral});
+  if(npm>=0.08&&at>=1.0&&em<=3.5)recs.push({icon:"🏆",t:"Strong Performance",d:"All DuPont components are within healthy ranges. Consider strategic growth investments.",c:C.maibGreen});
+  if(mode==="5"&&tb<0.75)recs.push({icon:"🏛️",t:"High Tax Impact",d:"Tax burden of "+pct(tb)+"% is reducing your ROE. Explore tax incentives for women entrepreneurs.",c:C.teal});
+  if(mode==="5"&&ib<0.80)recs.push({icon:"💰",t:"Interest Cost Pressure",d:"Interest burden of "+pct(ib)+"% shows significant interest costs. Consider refinancing with LIDERA products.",c:C.coral});
+
+  return(
+  <section style={{background:C.white,padding:"96px 24px"}}>
+    <div style={{maxWidth:1200,margin:"0 auto"}}>
+      <SectionLabel color={C.purple} text="Financial Intelligence"/>
+      <h2 style={{fontFamily:"'DM Sans',sans-serif",fontSize:"clamp(26px,4vw,40px)",fontWeight:800,color:C.text,margin:"0 0 8px"}}>DuPont Analysis Model</h2>
+      <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:C.grayText,margin:"0 0 32px",maxWidth:640}}>Decompose your Return on Equity (ROE) into its fundamental drivers — profitability, efficiency, and leverage. Understand the engine behind your business performance.</p>
+
+      <div style={{display:"flex",gap:6,marginBottom:28}}>
+        <Pill active={mode==="3"} color={C.purple} onClick={()=>{setMode("3");setStep(0);}}>3-Factor Model</Pill>
+        <Pill active={mode==="5"} color={C.purple} onClick={()=>{setMode("5");setStep(0);}}>5-Factor Model</Pill>
+      </div>
+
+      {/* Formula Banner */}
+      <div style={{background:C.grayLight,borderRadius:16,padding:"20px 28px",marginBottom:32,border:"1px solid #e8ebe5"}}>
+        <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,fontWeight:600,color:C.grayMid,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>DuPont Formula</div>
+        {mode==="3"?(<div style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,fontWeight:700,color:C.text}}>ROE = <span style={{color:C.maibGreen}}>Net Profit Margin</span> × <span style={{color:C.gold}}>Asset Turnover</span> × <span style={{color:C.purple}}>Equity Multiplier</span></div>):(<div style={{fontFamily:"'DM Sans',sans-serif",fontSize:15,fontWeight:700,color:C.text}}>ROE = <span style={{color:C.teal}}>Tax Burden</span> × <span style={{color:C.coral}}>Interest Burden</span> × <span style={{color:C.maibGreen}}>EBIT Margin</span> × <span style={{color:C.gold}}>Asset Turnover</span> × <span style={{color:C.purple}}>Equity Multiplier</span></div>)}
+        <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.grayText,marginTop:6}}>{mode==="3"?"(Net Income ÷ Revenue) × (Revenue ÷ Total Assets) × (Total Assets ÷ Equity)":"(Net Income ÷ EBT) × (EBT ÷ EBIT) × (EBIT ÷ Revenue) × (Revenue ÷ Total Assets) × (Total Assets ÷ Equity)"}</div>
+      </div>
+
+      {/* Main Analysis Card */}
+      <div style={{background:`linear-gradient(135deg,${C.deep},#0d2818)`,borderRadius:20,padding:44,color:C.white,position:"relative",overflow:"hidden",marginBottom:32}}>
+        <div style={{position:"absolute",top:-60,right:-60,width:250,height:250,borderRadius:"50%",background:`${C.purple}08`}}/>
+        <div style={{position:"absolute",bottom:-40,left:-40,width:180,height:180,borderRadius:"50%",background:`${C.maibGreen}06`}}/>
+
+        {step===0&&(<div style={{position:"relative",zIndex:2}}>
+          <h3 style={{fontFamily:"'DM Sans',sans-serif",fontSize:22,fontWeight:800,margin:"0 0 6px"}}>Enter Financial Data</h3>
+          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:C.grayMid,margin:"0 0 24px"}}>Input your company's financials. Sample data pre-filled for a typical Moldovan SME.</p>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:24}}>
+            <div>
+              <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:700,color:C.maibGreen,marginBottom:14,display:"flex",alignItems:"center",gap:6}}><span style={{color:C.maibGreen}}>{I.chart}</span> Income Statement</div>
+              <Inp label="Revenue (MDL)" k="revenue" hint="Annual"/>
+              <Inp label="Net Income (MDL)" k="netIncome" hint="After tax"/>
+              {mode==="5"&&<><Inp label="EBIT (MDL)" k="ebit" hint="Operating profit"/><Inp label="EBT — Pre-tax Income (MDL)" k="ebt" hint="Before tax"/></>}
+            </div>
+            <div>
+              <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:700,color:C.gold,marginBottom:14,display:"flex",alignItems:"center",gap:6}}><span style={{color:C.gold}}>{I.layers}</span> Balance Sheet</div>
+              <Inp label="Total Assets (MDL)" k="totalAssets"/>
+              <Inp label="Shareholders' Equity (MDL)" k="equity"/>
+            </div>
+            <div>
+              <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:700,color:C.purple,marginBottom:14,display:"flex",alignItems:"center",gap:6}}><span style={{color:C.purple}}>{I.trendUp}</span> Live Preview</div>
+              <div style={{background:`${C.white}06`,borderRadius:14,padding:18}}>
+                {[{l:"ROE",v:pct(roe)+"%",c:g.c},{l:"Net Profit Margin",v:pct(npm)+"%",c:C.white},{l:"Asset Turnover",v:at.toFixed(2)+"x",c:C.white},{l:"Equity Multiplier",v:em.toFixed(2)+"x",c:C.white}].map((r,i)=>(<div key={i} style={{display:"flex",justifyContent:"space-between",padding:"8px 0",borderBottom:i<3?`1px solid ${C.white}08`:"none"}}><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:C.grayMid}}>{r.l}</span><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,color:r.c}}>{r.v}</span></div>))}
+              </div>
+              <button onClick={()=>setStep(1)} style={{width:"100%",marginTop:16,padding:"14px",background:C.purple,color:C.white,border:"none",borderRadius:12,fontFamily:"'DM Sans',sans-serif",fontSize:14,fontWeight:700,cursor:"pointer",transition:"all 0.2s"}} onMouseEnter={e=>e.currentTarget.style.opacity="0.88"} onMouseLeave={e=>e.currentTarget.style.opacity="1"}>Run DuPont Analysis</button>
+            </div>
+          </div>
+        </div>)}
+
+        {step===1&&(<div style={{textAlign:"center",padding:"60px 0"}}><style>{`@keyframes dupontSpin{to{transform:rotate(360deg)}}`}</style><div style={{width:80,height:80,borderRadius:"50%",border:`3px solid ${C.purple}30`,borderTopColor:C.purple,margin:"0 auto 20px",animation:"dupontSpin 1s linear infinite"}}/><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,fontWeight:700,color:C.white,marginBottom:8}}>Analyzing DuPont Decomposition...</div><div style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,color:C.grayMid}}>Calculating profitability, efficiency & leverage ratios</div></div>)}
+
+        {step===2&&(<div style={{position:"relative",zIndex:2}}>
+          <div style={{display:"flex",gap:12,marginBottom:28}}>
+            <button onClick={()=>setStep(0)} style={{padding:"8px 18px",borderRadius:50,border:`1px solid ${C.white}20`,background:"transparent",color:C.grayMid,fontFamily:"'DM Sans',sans-serif",fontSize:12,cursor:"pointer"}}>← Edit Data</button>
+            <div style={{padding:"8px 18px",borderRadius:50,background:`${C.purple}20`,fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600,color:C.purple}}>✓ Analysis Complete</div>
+          </div>
+
+          {/* ROE Result + Factor Tree */}
+          <div style={{display:"grid",gridTemplateColumns:"200px 1fr",gap:20,marginBottom:24}}>
+            <div style={{background:`${C.white}06`,borderRadius:16,padding:28,textAlign:"center"}}>
+              <div style={{width:120,height:120,borderRadius:"50%",background:`conic-gradient(${g.c} 0% ${roePct}%, ${C.white}10 ${roePct}% 100%)`,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 14px"}}><div style={{width:96,height:96,borderRadius:"50%",background:C.deep,display:"flex",alignItems:"center",justifyContent:"center"}}><div><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:32,fontWeight:800,color:g.c}}>{pct(roe)}</span><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,color:C.grayMid}}>%</span></div></div></div>
+              <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:14,fontWeight:700,color:C.white}}>Return on Equity</div>
+              <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:600,color:g.c,marginTop:2}}>{g.e} {g.l}</div>
+              <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:C.grayMid,marginTop:8}}>Industry avg: 12–15%</div>
+            </div>
+
+            <div style={{display:"grid",gridTemplateColumns:`repeat(${factors.length},1fr)`,gap:10}}>
+              {factors.map((f,i)=>(<div key={i} style={{background:`${f.c}12`,borderRadius:14,padding:16,border:`1px solid ${f.c}25`,transition:"all 0.3s",position:"relative"}} onMouseEnter={e=>e.currentTarget.style.transform="translateY(-3px)"} onMouseLeave={e=>e.currentTarget.style.transform="translateY(0)"}>
+                <div style={{fontSize:22,marginBottom:6}}>{f.icon}</div>
+                <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,fontWeight:600,color:`${C.white}60`,marginBottom:2}}>{f.label}</div>
+                <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:22,fontWeight:800,color:f.c}}>{f.value}</div>
+                <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:9,color:C.grayMid,marginTop:4,marginBottom:8}}>{f.formula}</div>
+                <div style={{height:5,background:`${C.white}10`,borderRadius:3}}><div style={{height:"100%",width:`${Math.min(f.bar,100)}%`,background:f.c,borderRadius:3,transition:"width 0.8s ease"}}/></div>
+                <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:8,color:`${C.white}40`,marginTop:6}}>{f.detail}</div>
+              </div>))}
+            </div>
+          </div>
+
+          {/* Multiplication visualization */}
+          <div style={{background:`${C.white}04`,borderRadius:14,padding:"16px 24px",marginBottom:24,display:"flex",alignItems:"center",justifyContent:"center",gap:8,flexWrap:"wrap"}}>
+            <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,color:C.white}}>ROE {pct(roe)}%</span>
+            <span style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:C.grayMid}}>=</span>
+            {factors.map((f,i)=>(<React.Fragment key={i}><span style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,color:f.c}}>{f.value}</span>{i<factors.length-1&&<span style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:C.grayMid}}>×</span>}</React.Fragment>))}
+          </div>
+
+          {/* Benchmarks */}
+          <div style={{background:`${C.white}06`,borderRadius:14,padding:24,marginBottom:20}}>
+            <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,color:C.white,marginBottom:14}}>Industry Benchmark Comparison</div>
+            <div style={{display:"grid",gridTemplateColumns:`repeat(${mode==="3"?4:6},1fr)`,gap:12}}>
+              {[{l:"ROE",v:pct(roe)+"%",bench:"12–15%",raw:roe,th:[0.15,0.10]},...(mode==="3"?[{l:"Net Margin",v:pct(npm)+"%",bench:"6–10%",raw:npm,th:[0.10,0.06]},{l:"Asset Turn.",v:at.toFixed(2)+"x",bench:"1.0–2.0x",raw:at,th:[1.5,1.0]},{l:"Eq. Mult.",v:em.toFixed(2)+"x",bench:"1.5–3.0x",raw:em,th:[2.5,1.5]}]:[{l:"Tax Burden",v:pct(tb)+"%",bench:">75%",raw:tb,th:[0.75,0.65]},{l:"Int. Burden",v:pct(ib)+"%",bench:">80%",raw:ib,th:[0.80,0.70]},{l:"EBIT Margin",v:pct(ebitM)+"%",bench:"8–15%",raw:ebitM,th:[0.12,0.08]},{l:"Asset Turn.",v:at.toFixed(2)+"x",bench:"1.0–2.0x",raw:at,th:[1.5,1.0]},{l:"Eq. Mult.",v:em.toFixed(2)+"x",bench:"1.5–3.0x",raw:em,th:[2.5,1.5]}])].map((b,i)=>(<div key={i} style={{textAlign:"center"}}>
+                <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:10,color:C.grayMid,marginBottom:4}}>{b.l}</div>
+                <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:18,fontWeight:800,color:cg(b.raw,b.th)}}>{b.v}</div>
+                <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:9,color:`${C.white}40`,marginTop:2}}>Bench: {b.bench}</div>
+                <div style={{width:8,height:8,borderRadius:"50%",background:cg(b.raw,b.th),margin:"6px auto 0"}}/>
+              </div>))}
+            </div>
+          </div>
+
+          {/* Recommendations */}
+          {recs.length>0&&(<div>
+            <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,color:C.white,marginBottom:12}}>Recommendations</div>
+            <div style={{display:"grid",gridTemplateColumns:`repeat(${Math.min(recs.length,3)},1fr)`,gap:10}}>
+              {recs.map((r,i)=>(<div key={i} style={{background:`${r.c}12`,borderRadius:14,padding:16,border:`1px solid ${r.c}25`}}>
+                <div style={{fontSize:20,marginBottom:6}}>{r.icon}</div>
+                <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:700,color:C.white,marginBottom:4}}>{r.t}</div>
+                <div style={{fontFamily:"'DM Sans',sans-serif",fontSize:11,color:`${C.white}70`,lineHeight:1.6}}>{r.d}</div>
+              </div>))}
+            </div>
+          </div>)}
+        </div>)}
+      </div>
+
+      {/* Educational Section */}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20}}>
+        <div style={{background:C.grayLight,borderRadius:16,padding:28,border:"1px solid #e8ebe5"}}>
+          <div style={{fontSize:28,marginBottom:10}}>📖</div>
+          <h4 style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,fontWeight:700,color:C.text,margin:"0 0 8px"}}>What is DuPont Analysis?</h4>
+          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:C.grayText,lineHeight:1.7,margin:0}}>Developed by the DuPont Corporation in the 1920s, this framework breaks down ROE into three key drivers: how much profit you generate from sales (margin), how efficiently you use assets (turnover), and how much you rely on debt (leverage). It reveals which factors truly drive your returns.</p>
+        </div>
+        <div style={{background:C.grayLight,borderRadius:16,padding:28,border:"1px solid #e8ebe5"}}>
+          <div style={{fontSize:28,marginBottom:10}}>🎯</div>
+          <h4 style={{fontFamily:"'DM Sans',sans-serif",fontSize:16,fontWeight:700,color:C.text,margin:"0 0 8px"}}>Why It Matters for Your Business</h4>
+          <p style={{fontFamily:"'DM Sans',sans-serif",fontSize:12,color:C.grayText,lineHeight:1.7,margin:0}}>A high ROE doesn't tell the full story. DuPont analysis helps you understand whether your returns come from operational excellence or financial risk. For LIDERA entrepreneurs, this insight guides better decisions on pricing, asset management, and financing strategy.</p>
+        </div>
+      </div>
+    </div>
+  </section>);
+}
+
+// ═══════════════════════════════════════════
 // LAB — with Consultancy Package, Freelancer Track, Hackathon
 // ═══════════════════════════════════════════
 function AcademyPage(){
@@ -709,12 +884,13 @@ function App(){
     <nav style={{position:"fixed",top:0,left:0,right:0,zIndex:1000,background:`${C.deep}E8`,backdropFilter:"blur(20px)",borderBottom:`1px solid ${C.white}06`}}>
       <div style={{maxWidth:1200,margin:"0 auto",padding:"0 24px",display:"flex",justifyContent:"space-between",alignItems:"center",height:58}}>
         <div style={{cursor:"pointer"}} onClick={()=>nav("home")}><Logo s={22}/></div>
-        <div style={{display:"flex",alignItems:"center",gap:2}}>{[{k:"home",l:"Home"},{k:"finance",l:"Finance"},{k:"academy",l:"Growth Hub"},{k:"network",l:"Network"}].map(n=>(<button key={n.k} onClick={()=>nav(n.k)} style={{padding:"7px 14px",border:"none",borderRadius:8,cursor:"pointer",background:page===n.k?`${C.maibGreen}12`:"transparent",color:page===n.k?C.maibGreen:`${C.white}80`,fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:page===n.k?600:500,transition:"all 0.2s"}}>{n.l}</button>))}</div>
+        <div style={{display:"flex",alignItems:"center",gap:2}}>{[{k:"home",l:"Home"},{k:"finance",l:"Finance"},{k:"dupont",l:"DuPont"},{k:"academy",l:"Growth Hub"},{k:"network",l:"Network"}].map(n=>(<button key={n.k} onClick={()=>nav(n.k)} style={{padding:"7px 14px",border:"none",borderRadius:8,cursor:"pointer",background:page===n.k?`${C.maibGreen}12`:"transparent",color:page===n.k?C.maibGreen:`${C.white}80`,fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:page===n.k?600:500,transition:"all 0.2s"}}>{n.l}</button>))}</div>
         <div style={{display:"flex",alignItems:"center",gap:10}}><button style={{width:32,height:32,borderRadius:8,border:`1px solid ${C.white}12`,background:"transparent",color:`${C.white}60`,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer"}}>{I.bell}</button><button style={{padding:"7px 18px",background:C.maibGreen,color:C.dark,border:"none",borderRadius:50,fontFamily:"'DM Sans',sans-serif",fontSize:12,fontWeight:700,cursor:"pointer"}}>Sign In</button></div>
       </div>
     </nav>
     {page==="home"&&<><Hero nav={nav}/><Pillars nav={nav}/><BeyondBanking/></>}
     {page==="finance"&&<div style={{paddingTop:58}}><FinancePage/></div>}
+    {page==="dupont"&&<div style={{paddingTop:58}}><DuPontPage/></div>}
     {page==="academy"&&<div style={{paddingTop:58}}><AcademyPage/></div>}
     {page==="network"&&<div style={{paddingTop:58}}><NetworkPage/></div>}
     <Footer/>
